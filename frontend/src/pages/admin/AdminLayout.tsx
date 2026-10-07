@@ -24,6 +24,7 @@ import { endSession } from "@/lib/session";
 import { lockScroll, unlockScroll } from "@/lib/lenis";
 import { apiGet } from "@/lib/api";
 import type { AppointmentDto } from "@/lib/types";
+import { Toaster } from "@/components/ui/sonner";
 
 const LINKS = [
   { to: "/admin", label: "Tableau de bord", icon: LayoutDashboard, end: true },
@@ -169,6 +170,7 @@ export default function AdminLayout() {
           <Outlet />
         </div>
       </main>
+      <Toaster />
     </div>
   );
 }

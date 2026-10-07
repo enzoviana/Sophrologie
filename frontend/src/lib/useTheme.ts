@@ -50,19 +50,19 @@ export function useTheme() {
       });
     },
     onSuccess: (data) => {
-      console.log("Theme mutation success, received data:", data);
-      // Update cache
+      console.log("✅ Theme mutation success, received data:", data);
+      // Update cache - this will trigger re-render of all components using this query
       queryClient.setQueryData(["site-theme"], data);
-      // Apply theme immediately
+      // Apply theme immediately to ensure it's visible right away
       if (data?.colors) {
-        console.log("Applying theme from mutation success");
+        console.log("🎨 Applying theme to entire site:", data.palette_name);
         applyTheme(data.colors);
       } else {
-        console.warn("No colors in response data:", data);
+        console.warn("⚠️ No colors in response data:", data);
       }
     },
     onError: (error) => {
-      console.error("Theme mutation error:", error);
+      console.error("❌ Theme mutation error:", error);
     },
   });
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Palette, Check, TestTube } from "lucide-react";
+import { toast } from "sonner";
 import { useTheme } from "@/lib/useTheme";
 import { THEME_PRESETS, getPresetById, applyTheme } from "@/lib/theme";
 import type { ThemeColors } from "@/lib/types";
@@ -153,10 +154,11 @@ const COLOR_LABELS: Record<keyof ThemeColors, string> = {
 };
 
 export default function ThemePage() {
-  const { theme, saveTheme, isSaving } = useTheme();
+  const { theme, saveTheme, isSaving, saveError } = useTheme();
   const [selectedPresetId, setSelectedPresetId] = useState<string>("");
   const [customColors, setCustomColors] = useState<ThemeColors | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
+  const [lastSaveSuccess, setLastSaveSuccess] = useState(false);
 
   // Initialize from loaded theme
   useEffect(() => {
@@ -165,6 +167,25 @@ export default function ThemePage() {
       setCustomColors(theme.colors);
     }
   }, [theme]);
+
+  // Show toast on save success
+  useEffect(() => {
+    if (!isSaving && lastSaveSuccess && !saveError) {
+      toast.success("🎨 Thème enregistré !", {
+        description: "Les nouvelles couleurs sont appliquées sur tout le site",
+      });
+      setLastSaveSuccess(false);
+    }
+  }, [isSaving, lastSaveSuccess, saveError]);
+
+  // Show toast on error
+  useEffect(() => {
+    if (saveError) {
+      toast.error("Erreur lors de l'enregistrement", {
+        description: "Veuillez réessayer",
+      });
+    }
+  }, [saveError]);
 
   const handlePresetSelect = (presetId: string) => {
     const preset = getPresetById(presetId);
@@ -200,7 +221,8 @@ export default function ThemePage() {
   const handleSave = () => {
     if (!customColors) return;
 
-    console.log("Saving theme:", { palette_name: selectedPresetId, colors: customColors });
+    console.log("💾 Saving theme:", { palette_name: selectedPresetId, colors: customColors });
+    setLastSaveSuccess(true);
     saveTheme({
       palette_name: selectedPresetId,
       colors: customColors,
