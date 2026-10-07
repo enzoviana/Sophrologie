@@ -109,12 +109,45 @@ export const THEME_PRESETS: ThemePreset[] = [
  * Apply theme colors to CSS variables
  */
 export function applyTheme(colors: ThemeColors): void {
+  console.log("Applying theme colors:", colors);
+
+  // Apply custom color variables
   Object.entries(colors).forEach(([key, value]) => {
     const cssVar = CSS_VARIABLE_MAP[key as keyof ThemeColors];
     if (cssVar) {
       document.documentElement.style.setProperty(cssVar, value);
     }
   });
+
+  // Map theme colors to Tailwind/shadcn base variables
+  // This ensures UI components using --primary, --secondary, etc. also update
+  document.documentElement.style.setProperty("--background", colors["cream"]);
+  document.documentElement.style.setProperty("--foreground", colors["ink"]);
+  document.documentElement.style.setProperty("--primary", colors["sage-deep"]);
+  document.documentElement.style.setProperty("--secondary", colors["sage-light"]);
+  document.documentElement.style.setProperty("--secondary-foreground", colors["forest"]);
+  document.documentElement.style.setProperty("--muted", colors["sand"]);
+  document.documentElement.style.setProperty("--muted-foreground", colors["ink-muted"]);
+  document.documentElement.style.setProperty("--accent", colors["terracotta"]);
+  document.documentElement.style.setProperty("--border", colors["sage-soft"]);
+  document.documentElement.style.setProperty("--input", colors["sage-soft"]);
+  document.documentElement.style.setProperty("--ring", colors["sage"]);
+
+  // Sidebar variables
+  document.documentElement.style.setProperty("--sidebar", colors["cream"]);
+  document.documentElement.style.setProperty("--sidebar-foreground", colors["ink"]);
+  document.documentElement.style.setProperty("--sidebar-primary", colors["sage-deep"]);
+  document.documentElement.style.setProperty("--sidebar-accent", colors["sage-light"]);
+  document.documentElement.style.setProperty("--sidebar-accent-foreground", colors["forest"]);
+  document.documentElement.style.setProperty("--sidebar-border", colors["sage-soft"]);
+  document.documentElement.style.setProperty("--sidebar-ring", colors["sage"]);
+
+  // Chart colors
+  document.documentElement.style.setProperty("--chart-1", colors["sage"]);
+  document.documentElement.style.setProperty("--chart-2", colors["sage-deep"]);
+  document.documentElement.style.setProperty("--chart-3", colors["terracotta"]);
+  document.documentElement.style.setProperty("--chart-4", colors["sage-soft"]);
+  document.documentElement.style.setProperty("--chart-5", colors["forest"]);
 }
 
 /**

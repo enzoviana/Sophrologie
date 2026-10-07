@@ -50,12 +50,19 @@ export function useTheme() {
       });
     },
     onSuccess: (data) => {
+      console.log("Theme mutation success, received data:", data);
       // Update cache
       queryClient.setQueryData(["site-theme"], data);
       // Apply theme immediately
       if (data?.colors) {
+        console.log("Applying theme from mutation success");
         applyTheme(data.colors);
+      } else {
+        console.warn("No colors in response data:", data);
       }
+    },
+    onError: (error) => {
+      console.error("Theme mutation error:", error);
     },
   });
 

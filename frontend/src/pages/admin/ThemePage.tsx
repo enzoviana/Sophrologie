@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Palette, Check } from "lucide-react";
+import { Palette, Check, TestTube } from "lucide-react";
 import { useTheme } from "@/lib/useTheme";
-import { THEME_PRESETS, getPresetById } from "@/lib/theme";
+import { THEME_PRESETS, getPresetById, applyTheme } from "@/lib/theme";
 import type { ThemeColors } from "@/lib/types";
 
 interface ColorInputProps {
@@ -172,6 +172,9 @@ export default function ThemePage() {
       setSelectedPresetId(presetId);
       setCustomColors(preset.colors);
       setHasChanges(true);
+      // Apply theme immediately for preview
+      console.log("Applying preset:", presetId, preset.colors);
+      applyTheme(preset.colors);
     }
   };
 
@@ -188,9 +191,16 @@ export default function ThemePage() {
     setHasChanges(true);
   };
 
+  const handleTestApply = () => {
+    if (!customColors) return;
+    console.log("Testing theme application (without save):", customColors);
+    applyTheme(customColors);
+  };
+
   const handleSave = () => {
     if (!customColors) return;
 
+    console.log("Saving theme:", { palette_name: selectedPresetId, colors: customColors });
     saveTheme({
       palette_name: selectedPresetId,
       colors: customColors,
@@ -269,6 +279,13 @@ export default function ThemePage() {
             Modifications non enregistrées
           </span>
         )}
+        <button
+          onClick={handleTestApply}
+          className="flex items-center gap-2 rounded-xl border-2 border-terracotta bg-white px-6 py-3 font-medium text-terracotta transition-colors hover:bg-terracotta/5"
+        >
+          <TestTube className="h-4 w-4" />
+          Test (sans sauvegarder)
+        </button>
         <button
           onClick={handleSave}
           disabled={isSaving || !hasChanges}
