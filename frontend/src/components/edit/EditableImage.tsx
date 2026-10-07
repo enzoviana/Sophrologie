@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ImageIcon, Loader2 } from "lucide-react";
 import { useEditMode } from "@/lib/editMode";
 import { resolveImage } from "@/lib/content";
+import { getApiUrl } from "@/lib/api";
 import { toast } from "sonner";
 import { Star4 } from "@/components/landing/Star";
 
@@ -28,7 +29,11 @@ export function EditableImage({ field, path, fallback, alt, className, eager = f
       const fd = new FormData();
       fd.append("field", field);
       fd.append("file", file);
-      const res = await fetch("/api/content/image", { method: "POST", body: fd });
+      const res = await fetch(getApiUrl("/content/image"), {
+        method: "POST",
+        body: fd,
+        credentials: "include"
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.detail ?? "Échec de l'envoi");

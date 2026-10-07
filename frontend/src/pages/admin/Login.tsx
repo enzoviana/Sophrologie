@@ -25,9 +25,10 @@ export default function AdminLogin() {
     setSubmitting(true);
     try {
       const data = await apiPost<AdminUser>("/auth/login", { email, password });
-      beginSession();
       queryClient.setQueryData(["auth-me"], data);
-      navigate("/admin");
+      beginSession();
+      // Force a full page reload to ensure auth state is properly initialized
+      window.location.href = "/admin";
     } catch (err) {
       setError(formatApiError(err));
     } finally {

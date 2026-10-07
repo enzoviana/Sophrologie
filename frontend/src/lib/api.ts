@@ -46,3 +46,6 @@ export const apiPut = <T>(path: string, body?: JsonBody) => request<T>("PUT", pa
 export const apiPatch = <T>(path: string, body?: JsonBody) =>
   request<T>("PATCH", path, body ?? null);
 export const apiDelete = <T>(path: string) => request<T>("DELETE", path);
+
+// Helper to get the full API URL for use in fetch calls outside of the request function
+export const getApiUrl = (path: string) => `${BASE}${path}`;

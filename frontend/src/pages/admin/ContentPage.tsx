@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageIcon, Loader2, Save } from "lucide-react";
-import { apiGet, apiPut } from "@/lib/api";
+import { apiGet, apiPut, getApiUrl } from "@/lib/api";
 import { formatApiError } from "@/lib/auth";
 import { toast } from "sonner";
 import { DEFAULT_CONTENT, resolveImage, type SiteContent } from "@/lib/content";
@@ -44,7 +44,11 @@ function ImageField({ label, fieldKey, value }: { label: string; fieldKey: strin
       const fd = new FormData();
       fd.append("field", fieldKey);
       fd.append("file", file);
-      const res = await fetch("/api/content/image", { method: "POST", body: fd });
+      const res = await fetch(getApiUrl("/content/image"), {
+        method: "POST",
+        body: fd,
+        credentials: "include"
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.detail ?? "Échec de l'envoi");

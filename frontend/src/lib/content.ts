@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiGet } from "./api";
+import { apiGet, getApiUrl } from "./api";
 import { COMMUNES, FAQS, MARQUEE_ITEMS, TESTIMONIALS } from "@/components/landing/data";
 
 export interface TimelineStep {
@@ -144,7 +144,7 @@ export const STATIC_FAQS: FaqDto[] = FAQS.map((f, i) => ({ id: `static-${i}`, ..
 
 export function resolveImage(path: string | null | undefined, fallback: string): string {
   if (!path) return fallback;
-  return path.startsWith("http") ? path : `/api/files/${path}`;
+  return path.startsWith("http") ? path : getApiUrl(`/files/${path}`);
 }
 
 export function useSiteContent(): SiteContent {

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Camera, Loader2, Save } from "lucide-react";
-import { apiGet, apiPut } from "@/lib/api";
+import { apiGet, apiPut, getApiUrl } from "@/lib/api";
 import { formatApiError } from "@/lib/auth";
 import { toast } from "sonner";
 import type { ProfileDto } from "@/lib/types";
@@ -49,7 +49,11 @@ export default function SettingsPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/profile/photo", { method: "POST", body: fd });
+      const res = await fetch(getApiUrl("/profile/photo"), {
+        method: "POST",
+        body: fd,
+        credentials: "include"
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         throw new Error(body?.detail ?? "Échec de l'envoi");
@@ -66,7 +70,7 @@ export default function SettingsPage() {
   if (!form) return null;
 
   const inputClass = "w-full rounded-xl border border-input bg-transparent px-4 py-2.5 text-sm outline-none focus:border-sage-deep";
-  const photoUrl = profile?.photo_path ? `/api/files/${profile.photo_path}` : null;
+  const photoUrl = profile?.photo_path ? getApiUrl(`/files/${profile.photo_path}`) : null;
 
   return (
     <div data-testid="admin-settings-page">
