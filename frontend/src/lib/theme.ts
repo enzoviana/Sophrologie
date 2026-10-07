@@ -1,22 +1,23 @@
 import type { ThemeColors, ThemePreset } from "./types";
 
 /**
- * CSS Variable mapping - maps CSS variable names to theme color keys
+ * CSS Variable mapping - maps theme color keys to the CSS variable names
+ * We modify the -value variables which are then referenced by all other variables
  */
 export const CSS_VARIABLE_MAP: Record<keyof ThemeColors, string> = {
-  "sage-light": "--color-sage-light",
-  "sage-soft": "--color-sage-soft",
-  "sage": "--color-sage",
-  "sage-deep": "--color-sage-deep",
-  "forest": "--color-forest",
-  "cream": "--color-cream",
-  "sand": "--color-sand",
-  "terracotta": "--color-terracotta",
-  "terracotta-hover": "--color-terracotta-hover",
-  "etoile": "--color-etoile",
-  "etoile-soft": "--color-etoile-soft",
-  "ink": "--color-ink",
-  "ink-muted": "--color-ink-muted",
+  "sage-light": "--sage-light-value",
+  "sage-soft": "--sage-soft-value",
+  "sage": "--sage-value",
+  "sage-deep": "--sage-deep-value",
+  "forest": "--forest-value",
+  "cream": "--cream-value",
+  "sand": "--sand-value",
+  "terracotta": "--terracotta-value",
+  "terracotta-hover": "--terracotta-hover-value",
+  "etoile": "--etoile-value",
+  "etoile-soft": "--etoile-soft-value",
+  "ink": "--ink-value",
+  "ink-muted": "--ink-muted-value",
 };
 
 /**
@@ -107,47 +108,22 @@ export const THEME_PRESETS: ThemePreset[] = [
 
 /**
  * Apply theme colors to CSS variables
+ * Only modifies the -value variables; all other variables reference these automatically
  */
 export function applyTheme(colors: ThemeColors): void {
-  console.log("Applying theme colors:", colors);
+  console.log("🎨 Applying theme colors to entire site:", colors);
 
-  // Apply custom color variables
+  // Apply base color values
+  // All other variables (--color-*, --primary, --secondary, etc.) reference these automatically
   Object.entries(colors).forEach(([key, value]) => {
     const cssVar = CSS_VARIABLE_MAP[key as keyof ThemeColors];
     if (cssVar) {
       document.documentElement.style.setProperty(cssVar, value);
+      console.log(`  ✓ ${cssVar} = ${value}`);
     }
   });
 
-  // Map theme colors to Tailwind/shadcn base variables
-  // This ensures UI components using --primary, --secondary, etc. also update
-  document.documentElement.style.setProperty("--background", colors["cream"]);
-  document.documentElement.style.setProperty("--foreground", colors["ink"]);
-  document.documentElement.style.setProperty("--primary", colors["sage-deep"]);
-  document.documentElement.style.setProperty("--secondary", colors["sage-light"]);
-  document.documentElement.style.setProperty("--secondary-foreground", colors["forest"]);
-  document.documentElement.style.setProperty("--muted", colors["sand"]);
-  document.documentElement.style.setProperty("--muted-foreground", colors["ink-muted"]);
-  document.documentElement.style.setProperty("--accent", colors["terracotta"]);
-  document.documentElement.style.setProperty("--border", colors["sage-soft"]);
-  document.documentElement.style.setProperty("--input", colors["sage-soft"]);
-  document.documentElement.style.setProperty("--ring", colors["sage"]);
-
-  // Sidebar variables
-  document.documentElement.style.setProperty("--sidebar", colors["cream"]);
-  document.documentElement.style.setProperty("--sidebar-foreground", colors["ink"]);
-  document.documentElement.style.setProperty("--sidebar-primary", colors["sage-deep"]);
-  document.documentElement.style.setProperty("--sidebar-accent", colors["sage-light"]);
-  document.documentElement.style.setProperty("--sidebar-accent-foreground", colors["forest"]);
-  document.documentElement.style.setProperty("--sidebar-border", colors["sage-soft"]);
-  document.documentElement.style.setProperty("--sidebar-ring", colors["sage"]);
-
-  // Chart colors
-  document.documentElement.style.setProperty("--chart-1", colors["sage"]);
-  document.documentElement.style.setProperty("--chart-2", colors["sage-deep"]);
-  document.documentElement.style.setProperty("--chart-3", colors["terracotta"]);
-  document.documentElement.style.setProperty("--chart-4", colors["sage-soft"]);
-  document.documentElement.style.setProperty("--chart-5", colors["forest"]);
+  console.log("✅ Theme applied successfully!");
 }
 
 /**
