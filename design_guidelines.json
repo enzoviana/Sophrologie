@@ -1,0 +1,197 @@
+{
+  "theme": "light",
+  "archetype": "ORGANIC & EARTHY (Trust, Growth, Calm) blended with SWISS / DENSE DASHBOARD clarity",
+  "brand": {
+    "name": "Mon Atelier Sophto",
+    "tagline": "Sophrologie & Bien-être — par Katia Guijarro",
+    "location": "Itinérante dans un rayon de 20 km autour d'Arguenos (31160)"
+  },
+  "fonts": {
+    "heading": "Lora Variable",
+    "body": "DM Sans Variable",
+    "css_import": "@import \"@fontsource-variable/lora\";\n@import \"@fontsource-variable/dm-sans\";",
+    "css_variables": {
+      "--font-heading": "'Lora Variable', serif",
+      "--font-sans": "'DM Sans Variable', sans-serif"
+    }
+  },
+  "colors": {
+    "surfaces": [
+      {
+        "name": "page",
+        "kind": "solid",
+        "bg": "#FBF9F4",
+        "on_bg": "#1C2826",
+        "on_bg_muted": "#5C6B64"
+      },
+      {
+        "name": "panel",
+        "kind": "solid",
+        "bg": "#FFFFFF",
+        "on_bg": "#1C2826",
+        "on_bg_muted": "#5C6B64"
+      },
+      {
+        "name": "sidebar",
+        "kind": "solid",
+        "bg": "#22332D",
+        "on_bg": "#F5F3EC",
+        "on_bg_muted": "#A2B4AC"
+      },
+      {
+        "name": "sidebar_active",
+        "kind": "solid",
+        "bg": "#2F443C",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#D6E2DC"
+      },
+      {
+        "name": "sage_subtle",
+        "kind": "solid",
+        "bg": "#EEF3F0",
+        "on_bg": "#1D3229",
+        "on_bg_muted": "#4B6156"
+      },
+      {
+        "name": "cream_warm",
+        "kind": "solid",
+        "bg": "#F5F0E6",
+        "on_bg": "#2A251E",
+        "on_bg_muted": "#6E6252"
+      },
+      {
+        "name": "badge_pending",
+        "kind": "solid",
+        "bg": "#FEF3C7",
+        "on_bg": "#92400E",
+        "on_bg_muted": "#78350F"
+      },
+      {
+        "name": "badge_confirmed",
+        "kind": "solid",
+        "bg": "#DCFCE7",
+        "on_bg": "#166534",
+        "on_bg_muted": "#14532D"
+      },
+      {
+        "name": "badge_refused",
+        "kind": "solid",
+        "bg": "#FEE2E2",
+        "on_bg": "#991B1B",
+        "on_bg_muted": "#7F1D1D"
+      },
+      {
+        "name": "badge_completed",
+        "kind": "solid",
+        "bg": "#E0E7FF",
+        "on_bg": "#3730A3",
+        "on_bg_muted": "#312E81"
+      },
+      {
+        "name": "hero",
+        "kind": "image",
+        "contrast_against": "#1B2824",
+        "guarantee": "scrim: linear-gradient(rgba(28,40,38,0.70), rgba(28,40,38,0.85))",
+        "on_bg": "#FFFFFF",
+        "on_bg_muted": "#D8E2DC",
+        "roles": {
+          "link": "#F4E0CE",
+          "error": "#FCA5A5",
+          "success": "#86EFAC"
+        }
+      }
+    ],
+    "accent": "#C46D4E",
+    "on_accent": "#FFFFFF",
+    "accent_hover": "#B05C3E",
+    "border_subtle": "#E4DDD3",
+    "border_sidebar": "#2F443C",
+    "focus_ring": "#4E7B68"
+  },
+  "typography": {
+    "scale_px": {
+      "display": 52,
+      "h1": 38,
+      "h2": 28,
+      "h3": 20,
+      "h4": 16,
+      "body": 15,
+      "caption": 13
+    },
+    "rules": {
+      "headings_font": "font-heading (Lora, serif), tracking-tight",
+      "body_font": "font-sans (DM Sans, sans-serif), leading-relaxed",
+      "labels": "uppercase text-xs font-semibold tracking-wider text-muted-foreground",
+      "stat_numbers": "font-heading text-3xl font-bold tracking-tight text-[#1C2826]"
+    }
+  },
+  "entry_surfaces": {
+    "/": "landing page — warm sage/cream organic sophrology portal with public booking modal/section",
+    "/admin/login": "branded split login — deep forest green branding & values panel left, clean sage-tinted password auth form right",
+    "/admin": "dashboard overview — dense summary stat cards top, pending booking action queue left, quick calendar & services snapshot right",
+    "/admin/rendez-vous": "split appointments view — interactive requests queue with confirm/refuse actions top, configurable booking rules & working hours drawer right",
+    "/admin/calendar": "full administrative schedule — day/week/month interactive view with status-colored appointment blocks and slot details modal",
+    "/admin/services": "services catalog management — structured pricing and duration table with modal for service creation/edition",
+    "/admin/clients": "client directory — dense searchable table with contact records, booking history count, and direct note view",
+    "/admin/parametres": "profile & atelier settings — practitioner details, avatar photo upload with instant preview, zone radius configuration"
+  },
+  "layouts_and_grids": {
+    "admin_shell": {
+      "type": "collapsible_sidebar_with_topbar",
+      "sidebar_width": "w-64 md:w-72 (collapsed: w-20)",
+      "sidebar_bg": "#22332D",
+      "sidebar_border": "border-r border-[#2F443C]",
+      "main_bg": "#FBF9F4",
+      "topbar_height": "h-16 bg-white/80 backdrop-blur-md border-b border-[#E4DDD3]"
+    },
+    "dashboard_grid": {
+      "stats_row": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6",
+      "main_split": "grid grid-cols-1 lg:grid-cols-12 gap-6",
+      "pending_column": "lg:col-span-7 space-y-4",
+      "sidebar_widgets": "lg:col-span-5 space-y-4"
+    },
+    "calendar_grid": {
+      "header_controls": "flex flex-wrap items-center justify-between gap-3 mb-4",
+      "view_container": "bg-white rounded-xl border border-[#E4DDD3] p-4 shadow-sm"
+    }
+  },
+  "component_paths": {
+    "admin_layout": "frontend/src/components/admin/AdminLayout.tsx",
+    "admin_sidebar": "frontend/src/components/admin/AdminSidebar.tsx",
+    "admin_topbar": "frontend/src/components/admin/AdminTopbar.tsx",
+    "stat_card": "frontend/src/components/admin/StatCard.tsx",
+    "appointment_item": "frontend/src/components/admin/AppointmentItem.tsx",
+    "booking_settings_modal": "frontend/src/components/admin/BookingSettingsModal.tsx",
+    "service_dialog": "frontend/src/components/admin/ServiceDialog.tsx",
+    "calendar_day_week_month": "frontend/src/components/admin/CalendarView.tsx",
+    "profile_photo_uploader": "frontend/src/components/admin/ProfilePhotoUploader.tsx",
+    "public_booking_dialog": "frontend/src/components/booking/PublicBookingModal.tsx"
+  },
+  "motion": {
+    "transitions": "transition-colors duration-150 ease-out, transition-opacity duration-150 ease-out, transition-transform duration-200 ease-out",
+    "modal_entrance": "motion.div with opacity 0->1, scale 0.98->1",
+    "sidebar_collapse": "transition-all duration-300 ease-in-out",
+    "toast_feedback": "sonner bottom-right richColors"
+  },
+  "accessibility": {
+    "standards": "WCAG AA (minimum 4.5:1 contrast for all text)",
+    "data_testids": "Mandatory data-testid on every button, input, link, tab, select, and status badge",
+    "focus_states": "focus-visible:ring-2 focus-visible:ring-[#4E7B68] focus-visible:outline-none",
+    "aria_labels": "Clear aria-label on icon-only buttons (collapse sidebar, close modal, edit/delete actions)"
+  },
+  "image_urls": {
+    "katia_profile_default": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
+    "sophrology_serenity_nature": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80",
+    "relaxing_zen_herbs": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1000&q=80",
+    "pyrenees_landscape_arguenos": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+  },
+  "instructions_to_main_agent": [
+    "Retain the exact organic sage, warm beige, forest green, and terracotta palette for both landing and admin back-office.",
+    "Implement real password login for admin (default admin password can be e.g. 'sophro2026' or configured in database/env). Store session token in localStorage or cookie, redirecting unauthenticated users from /admin to /admin/login.",
+    "The admin back-office must include all required pages: /admin (Dashboard with stats + pending requests list), /admin/rendez-vous (Appointments with confirm/refuse buttons + Booking Settings drawer/panel), /admin/calendar (Day, Week, Month views of scheduled sessions), /admin/services (CRUD for sophrology sessions with name, duration, price, description), /admin/clients (Clients list with history and contact info), /admin/parametres (Profile management, bio, location, working zone, profile photo upload with preview).",
+    "Public booking form on landing page must submit real appointment requests into MongoDB with status 'pending' (en attente). Admin can then confirm (confirmé) or refuse (refusé).",
+    "Booking settings must allow configuring: open days (Lundi to Dimanche toggles), working hours (start/end times), gap between appointments (0min, 15min, 30min, 1h), and max appointments per day.",
+    "Add data-testid attributes to all interactive elements (e.g., data-testid='admin-login-submit', data-testid='appointment-confirm-btn', data-testid='calendar-view-toggle', etc.).",
+    "Use French language throughout the whole application."
+  ]
+}

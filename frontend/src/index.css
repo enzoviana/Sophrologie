@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/lora";
+@import "@fontsource-variable/dm-sans";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: 'Lora Variable', serif;
+    --font-serif: 'Lora Variable', serif;
+    --font-sans: 'DM Sans Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --color-sage-light: #E9EFE7;
+    --color-sage-soft: #C7D8C6;
+    --color-sage: #8FA98F;
+    --color-sage-deep: #4E6B50;
+    --color-forest: #243E2B;
+    --color-cream: #FAF7F2;
+    --color-sand: #F0EAE1;
+    --color-terracotta: #2B618F;
+    --color-terracotta-hover: #1B415C;
+    --color-etoile: #E6B432;
+    --color-etoile-soft: #F5D67E;
+    --color-ink: #1E2922;
+    --color-ink-muted: #526557;
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: #FAF7F2;
+    --foreground: #1E2922;
+    --card: #FFFFFF;
+    --card-foreground: #1E2922;
+    --popover: #FFFFFF;
+    --popover-foreground: #1E2922;
+    --primary: #4E6B50;
+    --primary-foreground: #FFFFFF;
+    --secondary: #E9EFE7;
+    --secondary-foreground: #243E2B;
+    --muted: #F0EAE1;
+    --muted-foreground: #526557;
+    --accent: #C87D55;
+    --accent-foreground: #FFFFFF;
+    --destructive: #B0432F;
+    --border: #E4DDD3;
+    --input: #E4DDD3;
+    --ring: #8FA98F;
+    --chart-1: #8FA98F;
+    --chart-2: #4E6B50;
+    --chart-3: #C87D55;
+    --chart-4: #C7D8C6;
+    --chart-5: #243E2B;
+    --radius: 0.75rem;
+    --sidebar: #FAF7F2;
+    --sidebar-foreground: #1E2922;
+    --sidebar-primary: #4E6B50;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #E9EFE7;
+    --sidebar-accent-foreground: #243E2B;
+    --sidebar-border: #E4DDD3;
+    --sidebar-ring: #8FA98F;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html {
+    @apply font-sans;
+  }
+  ::selection {
+    background: #C7D8C6;
+    color: #243E2B;
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Editorial marquee */
+@keyframes marquee-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee-drift 55s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Cadres photo */
+.blob-frame {
+  border-radius: 1.5rem;
+}
+.blob-frame-alt {
+  border-radius: 1.5rem;
+}
+
+/* Film grain overlay */
+.grain-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
