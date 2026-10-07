@@ -250,6 +250,20 @@ export default function ContentPage() {
           <ImageField label="Image de la zone" fieldKey="zone_image" value={form.zone_image} />
         </Card>
 
+        <Card title="Astro-sophrologie (page dédiée)" testid="content-section-astro">
+          <Field label="Titre de la section" testid="content-astro-title" value={form.astro_title} onChange={(v) => set("astro_title", v)} />
+          <Field label="Introduction" testid="content-astro-intro" textarea rows={3} value={form.astro_intro} onChange={(v) => set("astro_intro", v)} />
+          <Field
+            label="Points clés (une par ligne)"
+            testid="content-astro-points"
+            textarea
+            rows={4}
+            value={form.astro_points.join("\n")}
+            onChange={(v) => set("astro_points", v.split("\n").map((s) => s.trim()).filter(Boolean))}
+          />
+          <Field label="Note de bas de section" testid="content-astro-note" textarea rows={2} value={form.astro_note} onChange={(v) => set("astro_note", v)} />
+        </Card>
+
         <Card title="Contact & pied de page" testid="content-section-contact">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Téléphone affiché" testid="content-contact-phone" value={form.contact_phone} onChange={(v) => set("contact_phone", v)} />

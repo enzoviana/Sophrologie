@@ -143,7 +143,7 @@ export default function AstroSophroPage() {
             <Reveal>
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sage-deep">Comment se déroulera un atelier</p>
               <h2 className="mt-3 font-serif text-2xl tracking-tight text-ink sm:text-3xl lg:text-4xl">
-                Une soirée entre ciel et souffle
+                Un moment entre ciel et souffle
               </h2>
               <div className="mt-8 space-y-6">
                 {ATELIER_STEPS.map((step, i) => (

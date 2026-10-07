@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { MapPin, Menu, X, Phone, Mail } from "lucide-react";
 import { Logo } from "./Logo";
@@ -11,6 +11,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const content = useSiteContent();
+  const location = useLocation();
+
+  // Force scrolled style on astro page (dark background)
+  const isAstroPage = location.pathname === "/astro-sophrologie";
+  const shouldShowScrolledStyle = scrolled || isAstroPage;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -29,7 +34,7 @@ export function Navbar() {
       <header
         data-testid="main-navbar"
         className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-          scrolled ? "bg-cream/85 shadow-[0_1px_0_0_rgba(228,221,211,0.7)] backdrop-blur-xl" : "bg-transparent"
+          shouldShowScrolledStyle ? "bg-cream/85 shadow-[0_1px_0_0_rgba(228,221,211,0.7)] backdrop-blur-xl" : "bg-transparent"
         }`}
       >
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">

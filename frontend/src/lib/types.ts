@@ -77,6 +77,34 @@ export interface BlockedPeriod {
   label: string;
 }
 
+export interface ThemeColors {
+  "sage-light": string;
+  "sage-soft": string;
+  "sage": string;
+  "sage-deep": string;
+  "forest": string;
+  "cream": string;
+  "sand": string;
+  "terracotta": string;
+  "terracotta-hover": string;
+  "etoile": string;
+  "etoile-soft": string;
+  "ink": string;
+  "ink-muted": string;
+}
+
+export interface ThemeDto {
+  palette_name: string;
+  colors: ThemeColors;
+}
+
+export interface ThemePreset {
+  id: string;
+  name: string;
+  description: string;
+  colors: ThemeColors;
+}
+
 export const formatPrice = (price: number, note?: string | null): string =>
   price > 0 ? `${price} €` : (note ?? "Sur devis");
 

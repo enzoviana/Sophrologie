@@ -221,6 +221,25 @@ DEFAULT_CONTENT = {
     "astro_note": "Katia est en cours de formation : les ateliers d'astro-sophrologie ouvriront prochainement. Contactez-la pour être informée du lancement.",
 }
 
+DEFAULT_THEME = {
+    "palette_name": "sage_forest",
+    "colors": {
+        "sage_light": "#E9EFE7",
+        "sage_soft": "#C7D8C6",
+        "sage": "#8FA98F",
+        "sage_deep": "#4E6B50",
+        "forest": "#243E2B",
+        "cream": "#FAF7F2",
+        "sand": "#F0EAE1",
+        "terracotta": "#2B618F",
+        "terracotta_hover": "#1B415C",
+        "etoile": "#E6B432",
+        "etoile_soft": "#F5D67E",
+        "ink": "#1E2922",
+        "ink_muted": "#526557",
+    },
+}
+
 
 async def seed_data() -> None:
     now = datetime.now(timezone.utc).isoformat()
@@ -236,6 +255,7 @@ async def seed_data() -> None:
     await db.settings.update_one({"key": "booking"}, {"$setOnInsert": {"key": "booking", **DEFAULT_SETTINGS}}, upsert=True)
     await db.profile.update_one({"key": "profile"}, {"$setOnInsert": {"key": "profile", **DEFAULT_PROFILE}}, upsert=True)
     await db.content.update_one({"key": "site"}, {"$setOnInsert": {"key": "site", **DEFAULT_CONTENT}}, upsert=True)
+    await db.theme.update_one({"key": "site_theme"}, {"$setOnInsert": {"key": "site_theme", **DEFAULT_THEME}}, upsert=True)
 
 
 @asynccontextmanager
@@ -346,6 +366,27 @@ class BlockedPeriodIn(BaseModel):
 
 class BlockedPeriodOut(BlockedPeriodIn):
     id: str
+
+
+class ThemeColorsBody(BaseModel):
+    sage_light: str
+    sage_soft: str
+    sage: str
+    sage_deep: str
+    forest: str
+    cream: str
+    sand: str
+    terracotta: str
+    terracotta_hover: str
+    etoile: str
+    etoile_soft: str
+    ink: str
+    ink_muted: str
+
+
+class ThemeBody(BaseModel):
+    palette_name: str
+    colors: ThemeColorsBody
 
 
 # ---------------- Helpers ----------------
@@ -734,6 +775,60 @@ async def upload_content_image(field: str = Form(...), file: UploadFile = File(.
     path = await store_image(file, "content")
     await db.content.update_one({"key": "site"}, {"$set": {field: path}}, upsert=True)
     return {"field": field, "path": path}
+
+
+# ---------------- Theme ----------------
+
+def snake_to_kebab(s: str) -> str:
+    """Convert snake_case to kebab-case"""
+    return s.replace("_", "-")
+
+
+def kebab_to_snake(s: str) -> str:
+    """Convert kebab-case to snake_case"""
+    return s.replace("-", "_")
+
+
+def convert_colors_to_kebab(colors: dict) -> dict:
+    """Convert color keys from snake_case to kebab-case"""
+    return {snake_to_kebab(k): v for k, v in colors.items()}
+
+
+def convert_colors_to_snake(colors: dict) -> dict:
+    """Convert color keys from kebab-case to snake_case"""
+    return {kebab_to_snake(k): v for k, v in colors.items()}
+
+
+@api_router.get("/theme")
+async def read_theme():
+    """Public endpoint - returns theme with kebab-case color keys"""
+    doc = await db.theme.find_one({"key": "site_theme"}, {"_id": 0, "key": 0})
+    if not doc:
+        doc = DEFAULT_THEME
+    # Convert snake_case to kebab-case for frontend
+    return {
+        "palette_name": doc.get("palette_name", DEFAULT_THEME["palette_name"]),
+        "colors": convert_colors_to_kebab(doc.get("colors", DEFAULT_THEME["colors"]))
+    }
+
+
+@api_router.put("/theme")
+async def write_theme(body: ThemeBody, user: dict = Depends(get_current_user)):
+    """Admin-only endpoint - accepts theme with snake_case color keys"""
+    # Validate hex colors
+    import re
+    hex_pattern = re.compile(r'^#[0-9A-Fa-f]{6}$')
+    colors_dict = body.colors.model_dump()
+    for key, value in colors_dict.items():
+        if not hex_pattern.match(value):
+            raise HTTPException(status_code=400, detail=f"Invalid hex color for {key}: {value}")
+
+    theme_data = {
+        "palette_name": body.palette_name,
+        "colors": colors_dict
+    }
+    await db.theme.update_one({"key": "site_theme"}, {"$set": theme_data}, upsert=True)
+    return await read_theme()
 
 
 # ---------------- Testimonials ----------------

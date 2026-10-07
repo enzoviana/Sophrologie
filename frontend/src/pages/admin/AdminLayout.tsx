@@ -11,6 +11,7 @@ import {
   Leaf,
   LogOut,
   Menu,
+  Palette,
   Quote,
   Settings,
   Users,
@@ -33,6 +34,7 @@ const LINKS = [
   { to: "/admin/contenu", label: "Contenu du site", icon: FileText, end: false },
   { to: "/admin/temoignages", label: "Témoignages", icon: Quote, end: false },
   { to: "/admin/faq", label: "FAQ", icon: CircleHelp, end: false },
+  { to: "/admin/theme", label: "Thème & Couleurs", icon: Palette, end: false },
   { to: "/admin/parametres", label: "Paramètres", icon: Settings, end: false },
 ];
 

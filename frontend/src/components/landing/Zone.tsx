@@ -1,11 +1,8 @@
 import { MapPin } from "lucide-react";
 import { Reveal } from "./Reveal";
-import { resolveImage, useSiteContent } from "@/lib/content";
+import { useSiteContent } from "@/lib/content";
 import { EditableText } from "@/components/edit/EditableText";
-import { EditableImage } from "@/components/edit/EditableImage";
-
-const FALLBACK_ZONE_IMAGE =
-  "https://images.unsplash.com/photo-1694961585324-2e1162cc45f8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHw0fHxweXJlbmVlcyUyMG1vdW50YWlucyUyMGxhbmRzY2FwZSUyMGZyYW5jZXxlbnwwfHx8fDE3OTEwMzkwMTR8MA&ixlib=rb-4.1.0&q=85";
+import { ZoneMap } from "./ZoneMap";
 
 export function Zone() {
   const content = useSiteContent();
@@ -41,33 +38,9 @@ export function Zone() {
         </Reveal>
 
         <Reveal delay={0.15}>
-          <div className="relative overflow-hidden rounded-3xl shadow-2xl shadow-black/30">
-            <EditableImage
-              field="zone_image"
-              path={content.zone_image}
-              fallback={FALLBACK_ZONE_IMAGE}
-              alt="Vallées verdoyantes des Pyrénées commingeoises"
-              className="aspect-[4/3] w-full object-cover"
-            />
-            <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-forest/25" />
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 400 300"
-              className="pointer-events-none absolute inset-0 h-full w-full"
-              preserveAspectRatio="xMidYMid slice"
-            >
-              <circle cx="200" cy="150" r="115" fill="none" stroke="#FAF7F2" strokeOpacity="0.55" strokeWidth="1.5" strokeDasharray="5 6" />
-              <circle cx="200" cy="150" r="60" fill="none" stroke="#FAF7F2" strokeOpacity="0.35" strokeWidth="1" strokeDasharray="4 6" />
-            </svg>
-            <div className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-terracotta shadow-lg shadow-black/30 ring-4 ring-cream/40">
-                <MapPin className="h-6 w-6 text-white" />
-              </span>
-              <span className="mt-2 rounded-full bg-cream/95 px-4 py-1.5 text-xs font-semibold text-forest shadow">
-                Arguenos · 31160
-              </span>
-            </div>
-            <span className="pointer-events-none absolute bottom-4 right-5 rounded-full bg-forest/80 px-4 py-1.5 text-xs font-medium tracking-wide text-cream backdrop-blur">
+          <div className="relative">
+            <ZoneMap />
+            <span className="pointer-events-none absolute bottom-8 right-8 rounded-full bg-forest/90 px-4 py-2 text-xs font-medium tracking-wide text-cream shadow-lg backdrop-blur">
               Rayon de 20 km
             </span>
           </div>

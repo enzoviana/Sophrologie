@@ -5,13 +5,16 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { queryClient } from './lib/queryClient'
+import { ThemeLoader } from './components/ThemeLoader'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <ThemeLoader>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeLoader>
     </QueryClientProvider>
   </StrictMode>,
 )

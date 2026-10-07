@@ -22,6 +22,7 @@ import ContentPage from "@/pages/admin/ContentPage";
 import TestimonialsPage from "@/pages/admin/TestimonialsPage";
 import FaqPage from "@/pages/admin/FaqPage";
 import SettingsPage from "@/pages/admin/SettingsPage";
+import ThemePage from "@/pages/admin/ThemePage";
 
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="contenu" element={<ContentPage />} />
           <Route path="temoignages" element={<TestimonialsPage />} />
           <Route path="faq" element={<FaqPage />} />
+          <Route path="theme" element={<ThemePage />} />
           <Route path="parametres" element={<SettingsPage />} />
         </Route>
       </Routes>

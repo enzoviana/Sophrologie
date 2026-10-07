@@ -39,6 +39,7 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("id", ASCENDING)], name="id", unique=True),
         IndexModel([("start_date", ASCENDING), ("end_date", ASCENDING)], name="range"),
     ],
+    "theme": [IndexModel([("key", ASCENDING)], name="key", unique=True)],
 }
 
 
