@@ -9,8 +9,14 @@ export function Footer() {
   const content = useSiteContent();
   return (
     <footer data-testid="main-footer" className="relative overflow-hidden bg-forest pb-10 pt-20 text-cream">
+      {/* Étoiles décoratives - plus nombreuses pour plus de luminosité */}
       <Star4 className="absolute right-10 top-10 h-5 w-5 text-etoile/60" />
       <Star4 className="absolute right-24 top-24 h-3 w-3 text-etoile/40" />
+      <Star4 className="absolute left-12 top-16 h-4 w-4 text-etoile-soft/50" />
+      <Star4 className="absolute left-28 top-32 h-6 w-6 text-etoile/70" />
+      <Star4 className="absolute right-[45%] top-12 h-3.5 w-3.5 text-etoile/45" />
+      <Star4 className="absolute left-[15%] bottom-32 h-5 w-5 text-etoile-soft/60" />
+      <Star4 className="absolute right-[20%] bottom-24 h-4 w-4 text-etoile/50" />
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <p className="max-w-3xl font-serif text-3xl leading-snug tracking-tight sm:text-4xl lg:text-5xl">
           <EditableText field="footer_line1" value={content.footer_line1} />{" "}

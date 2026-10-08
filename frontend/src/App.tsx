@@ -23,6 +23,7 @@ import TestimonialsPage from "@/pages/admin/TestimonialsPage";
 import FaqPage from "@/pages/admin/FaqPage";
 import SettingsPage from "@/pages/admin/SettingsPage";
 import ThemePage from "@/pages/admin/ThemePage";
+import GuidePage from "@/pages/admin/GuidePage";
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="temoignages" element={<TestimonialsPage />} />
           <Route path="faq" element={<FaqPage />} />
           <Route path="theme" element={<ThemePage />} />
+          <Route path="guide" element={<GuidePage />} />
           <Route path="parametres" element={<SettingsPage />} />
         </Route>
       </Routes>

@@ -3,6 +3,7 @@ import { NavLink, Link, Outlet } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "motion/react";
 import {
+  BookOpen,
   CalendarCheck,
   CalendarDays,
   CircleHelp,
@@ -36,6 +37,7 @@ const LINKS = [
   { to: "/admin/temoignages", label: "Témoignages", icon: Quote, end: false },
   { to: "/admin/faq", label: "FAQ", icon: CircleHelp, end: false },
   { to: "/admin/theme", label: "Thème & Couleurs", icon: Palette, end: false },
+  { to: "/admin/guide", label: "Guide d'utilisation", icon: BookOpen, end: false },
   { to: "/admin/parametres", label: "Paramètres", icon: Settings, end: false },
 ];
 

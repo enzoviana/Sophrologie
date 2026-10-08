@@ -1,11 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Leaf, Pencil, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Leaf, Pencil, Plus, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { apiDelete, apiGet, apiPost, apiPut } from "@/lib/api";
 import { formatApiError } from "@/lib/auth";
 import { toast } from "sonner";
 import { formatDuration, formatPrice, type ServiceDto } from "@/lib/types";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ServiceForm {
   name: string;
@@ -40,12 +57,107 @@ const toPayload = (f: ServiceForm) => ({
   active: f.active,
 });
 
+interface SortableServiceProps {
+  service: ServiceDto;
+  onEdit: (s: ServiceDto) => void;
+  onDelete: (id: string) => void;
+}
+
+function SortableService({ service, onEdit, onDelete }: SortableServiceProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: service.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <article
+      ref={setNodeRef}
+      style={style}
+      key={service.id}
+      data-testid={`admin-service-card-${service.id}`}
+      className={`rounded-2xl border bg-white p-6 ${service.active ? "border-border" : "border-dashed border-border opacity-60"}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1">
+          <button
+            {...attributes}
+            {...listeners}
+            className="mt-1 cursor-grab text-ink-muted hover:text-sage-deep active:cursor-grabbing"
+            aria-label="Faire glisser pour réorganiser"
+          >
+            <GripVertical className="h-5 w-5" />
+          </button>
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-serif text-lg text-ink">{service.name}</h3>
+              {service.highlight && <span className="rounded-full bg-terracotta/15 px-2.5 py-0.5 text-xs font-semibold text-terracotta">Mis en avant</span>}
+              {!service.active && <span className="rounded-full bg-sand px-2.5 py-0.5 text-xs font-semibold text-ink-muted">Masqué du site</span>}
+            </div>
+            <p className="mt-1 text-sm font-medium text-sage-deep">{formatPrice(service.price, service.price_note)} · {formatDuration(service.duration_min)}</p>
+            {service.description && <p className="mt-3 text-sm leading-relaxed text-ink-muted">{service.description}</p>}
+            {service.features.length > 0 && (
+              <ul className="mt-3 space-y-1">
+                {service.features.map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-ink-muted">
+                    <Leaf className="h-3 w-3 text-sage-deep" /> {f}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+        <div className="flex gap-1.5">
+          <button data-testid={`service-edit-${service.id}`} onClick={() => onEdit(service)} aria-label={`Modifier ${service.name}`} className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted transition-colors hover:border-sage-deep hover:text-sage-deep">
+            <Pencil className="h-4 w-4" />
+          </button>
+          <button
+            data-testid={`service-delete-${service.id}`}
+            onClick={() => { if (window.confirm(`Supprimer « ${service.name} » ?`)) onDelete(service.id); }}
+            aria-label={`Supprimer ${service.name}`}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted transition-colors hover:border-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function ServicesPage() {
   const queryClient = useQueryClient();
   const { data: services, isLoading } = useQuery({ queryKey: ["admin-services"], queryFn: () => apiGet<ServiceDto[]>("/services") });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ServiceForm>(EMPTY_FORM);
+  const [localServices, setLocalServices] = useState<ServiceDto[]>([]);
+
+  // Sync local services with API data
+  useEffect(() => {
+    if (services) {
+      setLocalServices(services);
+    }
+  }, [services]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const reorderMutation = useMutation({
+    mutationFn: (serviceIds: string[]) => apiPut("/services/reorder", serviceIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-services"] });
+      queryClient.invalidateQueries({ queryKey: ["public-services"] });
+      toast.success("Ordre enregistré");
+    },
+    onError: (err) => toast.error(formatApiError(err)),
+  });
 
   const saveMutation = useMutation({
     mutationFn: (payload: ReturnType<typeof toPayload>) =>
@@ -69,6 +181,23 @@ export default function ServicesPage() {
     onError: (err) => toast.error(formatApiError(err)),
   });
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setLocalServices((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+
+        // Save new order to backend
+        reorderMutation.mutate(newOrder.map(s => s.id));
+
+        return newOrder;
+      });
+    }
+  };
+
   const openCreate = () => {
     setEditingId(null);
     setForm(EMPTY_FORM);
@@ -90,14 +219,23 @@ export default function ServicesPage() {
     setDialogOpen(true);
   };
 
+  const handleDelete = (id: string) => {
+    deleteMutation.mutate(id);
+  };
+
   const inputClass = "w-full rounded-xl border border-input bg-transparent px-4 py-2.5 text-sm outline-none focus:border-sage-deep";
+
+  // Use localServices or fall back to API data
+  const displayServices = localServices.length > 0 ? localServices : (services ?? []);
 
   return (
     <div data-testid="admin-services-page">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-2xl tracking-tight text-ink sm:text-3xl">Services</h1>
-          <p className="mt-2 text-sm text-ink-muted">Ces prestations s'affichent sur le site et dans le formulaire de réservation.</p>
+          <p className="mt-2 text-sm text-ink-muted">
+            Glissez-déposez les cartes pour réorganiser l'ordre d'affichage. Ces prestations apparaissent sur le site et dans le formulaire de réservation.
+          </p>
         </div>
         <button
           data-testid="service-create-button"
@@ -108,45 +246,19 @@ export default function ServicesPage() {
         </button>
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-8">
         {isLoading && <p className="px-2 py-8 text-sm text-ink-muted">Chargement…</p>}
-        {(services ?? []).map((s) => (
-          <article key={s.id} data-testid={`admin-service-card-${s.id}`} className={`rounded-2xl border bg-white p-6 ${s.active ? "border-border" : "border-dashed border-border opacity-60"}`}>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-serif text-lg text-ink">{s.name}</h3>
-                  {s.highlight && <span className="rounded-full bg-terracotta/15 px-2.5 py-0.5 text-xs font-semibold text-terracotta">Mis en avant</span>}
-                  {!s.active && <span className="rounded-full bg-sand px-2.5 py-0.5 text-xs font-semibold text-ink-muted">Masqué du site</span>}
-                </div>
-                <p className="mt-1 text-sm font-medium text-sage-deep">{formatPrice(s.price, s.price_note)} · {formatDuration(s.duration_min)}</p>
-              </div>
-              <div className="flex gap-1.5">
-                <button data-testid={`service-edit-${s.id}`} onClick={() => openEdit(s)} aria-label={`Modifier ${s.name}`} className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted transition-colors hover:border-sage-deep hover:text-sage-deep">
-                  <Pencil className="h-4 w-4" />
-                </button>
-                <button
-                  data-testid={`service-delete-${s.id}`}
-                  onClick={() => { if (window.confirm(`Supprimer « ${s.name} » ?`)) deleteMutation.mutate(s.id); }}
-                  aria-label={`Supprimer ${s.name}`}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-ink-muted transition-colors hover:border-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            {s.description && <p className="mt-3 text-sm leading-relaxed text-ink-muted">{s.description}</p>}
-            {s.features.length > 0 && (
-              <ul className="mt-3 space-y-1">
-                {s.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-ink-muted">
-                    <Leaf className="h-3 w-3 text-sage-deep" /> {f}
-                  </li>
+        {!isLoading && (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={displayServices.map(s => s.id)} strategy={verticalListSortingStrategy}>
+              <div className="grid gap-4 md:grid-cols-2">
+                {displayServices.map((s) => (
+                  <SortableService key={s.id} service={s} onEdit={openEdit} onDelete={handleDelete} />
                 ))}
-              </ul>
-            )}
-          </article>
-        ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

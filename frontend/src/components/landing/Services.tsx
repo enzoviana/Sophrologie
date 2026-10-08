@@ -8,7 +8,7 @@ import { formatDuration, formatPrice, type ServiceDto } from "@/lib/types";
 import { useSiteContent } from "@/lib/content";
 import { EditableText } from "@/components/edit/EditableText";
 
-export const STATIC_SERVICES: ServiceDto[] = SERVICES.map((s) => ({
+export const STATIC_SERVICES: ServiceDto[] = SERVICES.map((s, index) => ({
   id: s.id,
   name: s.name,
   description: s.description,
@@ -18,6 +18,7 @@ export const STATIC_SERVICES: ServiceDto[] = SERVICES.map((s) => ({
   features: s.features,
   highlight: !!s.highlight,
   active: true,
+  display_order: index,
 }));
 
 export function useServices(): ServiceDto[] {

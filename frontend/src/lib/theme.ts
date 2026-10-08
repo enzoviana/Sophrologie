@@ -104,6 +104,26 @@ export const THEME_PRESETS: ThemePreset[] = [
       "ink-muted": "#556B61",
     },
   },
+  {
+    id: "lumiere_etoiles",
+    name: "Lumière & Étoiles",
+    description: "Palette lumineuse avec étoiles dorées éclatantes",
+    colors: {
+      "sage-light": "#F5FAF7",
+      "sage-soft": "#E0F0E5",
+      "sage": "#A8CDB5",
+      "sage-deep": "#6BA882",
+      "forest": "#3A6B4F",
+      "cream": "#FFFDF8",
+      "sand": "#FFF8ED",
+      "terracotta": "#E8A05D",
+      "terracotta-hover": "#D98845",
+      "etoile": "#F4C430",
+      "etoile-soft": "#FFE380",
+      "ink": "#2C3E35",
+      "ink-muted": "#6B8073",
+    },
+  },
 ];
 
 /**

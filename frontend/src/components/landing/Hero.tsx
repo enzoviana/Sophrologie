@@ -51,6 +51,31 @@ export function Hero() {
       >
         <Star4 className="h-4 w-4" />
       </motion.span>
+      {/* Étoiles supplémentaires pour plus de luminosité */}
+      <motion.span
+        aria-hidden="true"
+        animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.8, 0.4] }}
+        transition={{ repeat: Infinity, duration: 6, delay: 0.5, ease: "easeInOut" }}
+        className="absolute right-[25%] top-[15%] hidden text-etoile-soft md:block"
+      >
+        <Star4 className="h-5 w-5" />
+      </motion.span>
+      <motion.span
+        aria-hidden="true"
+        animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.7, 0.3] }}
+        transition={{ repeat: Infinity, duration: 7, delay: 2, ease: "easeInOut" }}
+        className="absolute left-[15%] top-[20%] hidden text-etoile lg:block"
+      >
+        <Star4 className="h-3.5 w-3.5" />
+      </motion.span>
+      <motion.span
+        aria-hidden="true"
+        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+        transition={{ repeat: Infinity, duration: 5, delay: 1.5, ease: "easeInOut" }}
+        className="absolute right-[8%] bottom-32 hidden text-etoile-soft lg:block"
+      >
+        <Star4 className="h-6 w-6" />
+      </motion.span>
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-14 sm:px-8 lg:grid-cols-2 lg:gap-10 lg:pb-28 lg:pt-20">
         <motion.div style={{ y: textY }} className="max-w-xl">

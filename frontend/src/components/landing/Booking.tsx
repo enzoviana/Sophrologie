@@ -19,7 +19,7 @@ import { formatDuration, formatPrice, type AvailabilityDto, type BlockedPeriod, 
 
 const STEP_LABELS = ["Prestation", "Date & heure", "Coordonnées"];
 
-const STATIC_SERVICES: ServiceDto[] = SERVICES.map((s) => ({
+const STATIC_SERVICES: ServiceDto[] = SERVICES.map((s, index) => ({
   id: s.id,
   name: s.name,
   description: s.description,
@@ -29,6 +29,7 @@ const STATIC_SERVICES: ServiceDto[] = SERVICES.map((s) => ({
   features: s.features,
   highlight: !!s.highlight,
   active: true,
+  display_order: index,
 }));
 
 const DEFAULT_SETTINGS: BookingSettings = { open_days: [0, 1, 2, 3, 4, 5], start_time: "09:00", end_time: "19:00", gap_minutes: 15, max_per_day: 5 };

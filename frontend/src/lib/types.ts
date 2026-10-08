@@ -15,6 +15,7 @@ export interface ServiceDto {
   features: string[];
   highlight: boolean;
   active: boolean;
+  display_order: number;
 }
 
 export type AppointmentStatus = "pending" | "confirmed" | "refused";

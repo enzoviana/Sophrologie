@@ -244,7 +244,7 @@ DEFAULT_THEME = {
 async def seed_data() -> None:
     now = datetime.now(timezone.utc).isoformat()
     if await db.services.count_documents({}) == 0:
-        await db.services.insert_many([{"id": str(uuid.uuid4()), **s, "active": True, "created_at": now} for s in SEED_SERVICES])
+        await db.services.insert_many([{"id": str(uuid.uuid4()), **s, "active": True, "display_order": i, "created_at": now} for i, s in enumerate(SEED_SERVICES)])
         logger.info("Services seeded")
     if await db.testimonials.count_documents({}) == 0:
         await db.testimonials.insert_many([{"id": str(uuid.uuid4()), **t, "created_at": now} for t in SEED_TESTIMONIALS])
@@ -296,6 +296,7 @@ class ServiceIn(BaseModel):
 
 class ServiceOut(ServiceIn):
     id: str
+    display_order: int = 0
 
 
 class AppointmentIn(BaseModel):
@@ -486,15 +487,19 @@ async def auth_me(user: dict = Depends(get_current_user)):
 
 @api_router.get("/services", response_model=List[ServiceOut])
 async def list_services():
-    docs = await db.services.find({}, {"_id": 0}).to_list(200)
+    docs = await db.services.find({}, {"_id": 0}).sort("display_order", 1).to_list(200)
     return [pick(ServiceOut, d) for d in docs]
 
 
 @api_router.post("/services", response_model=ServiceOut)
 async def create_service(body: ServiceIn, user: dict = Depends(get_current_user)):
-    doc = {"id": str(uuid.uuid4()), **body.model_dump(), "created_at": datetime.now(timezone.utc).isoformat()}
+    # Get max display_order
+    last_service = await db.services.find_one({}, {"display_order": 1}, sort=[("display_order", -1)])
+    next_order = (last_service.get("display_order", -1) + 1) if last_service else 0
+
+    doc = {"id": str(uuid.uuid4()), **body.model_dump(), "display_order": next_order, "created_at": datetime.now(timezone.utc).isoformat()}
     await db.services.insert_one(doc)
-    return ServiceOut(**body.model_dump(), id=doc["id"])
+    return ServiceOut(**body.model_dump(), id=doc["id"], display_order=next_order)
 
 
 @api_router.put("/services/{service_id}", response_model=ServiceOut)
@@ -510,6 +515,14 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
     result = await db.services.delete_one({"id": service_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Service introuvable")
+    return {"ok": True}
+
+
+@api_router.put("/services/reorder")
+async def reorder_services(service_ids: List[str] = Body(...), user: dict = Depends(get_current_user)):
+    """Reorder services by updating display_order for each service ID in the list"""
+    for index, service_id in enumerate(service_ids):
+        await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
     return {"ok": True}
 
 
