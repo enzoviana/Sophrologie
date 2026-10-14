@@ -4,9 +4,19 @@ import { NAV_LINKS } from "./data";
 import { useSiteContent } from "@/lib/content";
 import { Star4 } from "./Star";
 import { EditableText } from "@/components/edit/EditableText";
+import { Facebook, Instagram, Linkedin, Calendar, MapPin } from "lucide-react";
 
 export function Footer() {
   const content = useSiteContent();
+
+  const socialLinks = [
+    { url: content.social_facebook, icon: Facebook, label: "Facebook", testid: "facebook" },
+    { url: content.social_instagram, icon: Instagram, label: "Instagram", testid: "instagram" },
+    { url: content.social_linkedin, icon: Linkedin, label: "LinkedIn", testid: "linkedin" },
+    { url: content.social_resalib, icon: Calendar, label: "Resalib", testid: "resalib" },
+    { url: content.social_google, icon: MapPin, label: "Google", testid: "google" },
+  ].filter(link => link.url && link.url.trim() !== "");
+
   return (
     <footer data-testid="main-footer" className="relative overflow-hidden bg-forest pb-10 pt-20 text-cream">
       {/* Étoiles décoratives - plus nombreuses pour plus de luminosité */}
@@ -28,7 +38,26 @@ export function Footer() {
         </p>
 
         <div className="mt-16 flex flex-col justify-between gap-10 border-t border-sage-deep/40 pt-10 md:flex-row md:items-end">
-          <Logo dark />
+          <div className="flex flex-col gap-4">
+            <Logo dark />
+            {socialLinks.length > 0 && (
+              <div className="flex gap-3" data-testid="social-links">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.testid}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    data-testid={`social-link-${link.testid}`}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-sage-deep/40 text-cream/70 transition-all duration-300 hover:border-etoile hover:bg-etoile/10 hover:text-cream"
+                  >
+                    <link.icon className="h-5 w-5" />
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
           <nav className="flex flex-wrap gap-x-7 gap-y-3" aria-label="Navigation pied de page">
             {NAV_LINKS.map((link) => (
               <NavLink

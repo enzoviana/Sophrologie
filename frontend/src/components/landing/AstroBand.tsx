@@ -3,8 +3,12 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "./Reveal";
 import { Star4 } from "./Star";
+import { useSiteContent } from "@/lib/content";
+import { EditableText } from "@/components/edit/EditableText";
 
 export function AstroBand() {
+  const content = useSiteContent();
+
   return (
     <section data-testid="astro-band-section" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
       <Reveal>
@@ -33,21 +37,21 @@ export function AstroBand() {
             <Star4 className="h-4 w-4" />
           </motion.span>
           <div className="relative px-8 py-16 text-center sm:px-16 lg:py-20">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-etoile-soft">Bientôt à l'atelier</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-etoile-soft">
+              <EditableText field="astro_band_surtitre" value={content.astro_band_surtitre} />
+            </p>
             <h2 className="mx-auto mt-4 max-w-2xl font-serif text-2xl tracking-tight text-cream sm:text-3xl lg:text-4xl">
-              L'astro-sophrologie lève doucement son regard vers les étoiles
+              <EditableText field="astro_band_title" value={content.astro_band_title} />
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-cream/80 sm:text-base">
-              Katia se forme actuellement à l'astrologie — trois années d'étude — pour relier ciel et
-              intérieur. Des ateliers d'astro-sophro verront le jour prochainement : c'est eux, les étoiles
-              qui veillent sur l'hippocampe.
+              <EditableText field="astro_band_text" value={content.astro_band_text} multiline />
             </p>
             <Link
               to="/astro-sophrologie"
               data-testid="astro-band-link"
               className="group mt-8 inline-flex items-center gap-2 rounded-full border border-etoile/50 px-6 py-3 text-sm font-medium text-etoile-soft transition-all duration-300 hover:bg-etoile/10"
             >
-              Découvrir l'astro-sophrologie
+              <EditableText field="astro_band_button" value={content.astro_band_button} />
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>

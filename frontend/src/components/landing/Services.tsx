@@ -48,6 +48,11 @@ export function Services() {
           <p className="mt-4 max-w-xl text-ink-muted">
             <EditableText field="services_subtitle" value={content.services_subtitle} multiline />
           </p>
+          {content.services_mutuelle_note && (
+            <p className="mt-3 max-w-xl text-sm italic text-sage-deep">
+              <EditableText field="services_mutuelle_note" value={content.services_mutuelle_note} multiline />
+            </p>
+          )}
         </Reveal>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">

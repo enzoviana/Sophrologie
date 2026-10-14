@@ -219,6 +219,19 @@ DEFAULT_CONTENT = {
     "astro_intro": "Après sa formation de sophrologie, Katia poursuit son chemin vers les étoiles : elle se forme actuellement à l'astrologie — un long cursus de trois années — pour créer des ateliers uniques mêlant la lecture symbolique du ciel et les pratiques corporelles de la sophrologie.",
     "astro_points": ["Ateliers collectifs à domicile ou en structures", "Des thèmes guidés par les cycles du ciel et les saisons", "Des pratiques de sophrologie adaptées à chacun"],
     "astro_note": "Katia est en cours de formation : les ateliers d'astro-sophrologie ouvriront prochainement. Contactez-la pour être informée du lancement.",
+    "astro_band_surtitre": "Bientôt à l'atelier",
+    "astro_band_title": "L'astro-sophrologie lève doucement son regard vers les étoiles",
+    "astro_band_text": "Katia se forme actuellement à l'astrologie pour relier ciel et intériorité. Des ateliers d'astro-sophro verront le jour prochainement : les étoiles veillent sur l'hippocampe.",
+    "astro_band_button": "Découvrir l'astro-sophrologie",
+    "about_secondary_title": "Un atelier itinérant, pensé pour vous",
+    "about_secondary_text": "Katia aménage son camping-car en véritable atelier de sophrologie mobile : un cocon calme et chaleureux qui se gare près de chez vous, pour vos séances individuelles comme pour les petits ateliers collectifs. L'atelier vient à vous, même là où il n'y a pas de cabinet.",
+    "about_secondary_image": None,
+    "services_mutuelle_note": "Certaines mutuelles prennent en charge tout ou partie des séances de sophrologie, renseignez-vous auprès de la vôtre.",
+    "social_facebook": "",
+    "social_instagram": "",
+    "social_linkedin": "",
+    "social_resalib": "",
+    "social_google": "",
 }
 
 DEFAULT_THEME = {
@@ -778,7 +791,7 @@ async def write_content(body: dict = Body(...), user: dict = Depends(get_current
     return await read_content()
 
 
-CONTENT_IMAGE_FIELDS = {"hero_image", "about_image", "zone_image"}
+CONTENT_IMAGE_FIELDS = {"hero_image", "about_image", "zone_image", "about_secondary_image"}
 
 
 @api_router.post("/content/image")

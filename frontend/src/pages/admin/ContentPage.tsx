@@ -218,6 +218,7 @@ export default function ContentPage() {
             <Field label="Contact — titre" testid="content-contact-title" value={form.contact_title} onChange={(v) => set("contact_title", v)} />
           </div>
           <Field label="Prestations — sous-titre" testid="content-services-subtitle" textarea rows={2} value={form.services_subtitle} onChange={(v) => set("services_subtitle", v)} />
+          <Field label="Prestations — note mutuelles" testid="content-services-mutuelle-note" textarea rows={2} value={form.services_mutuelle_note} onChange={(v) => set("services_mutuelle_note", v)} hint="Affichée sous le titre et sous-titre de la section Prestations" />
           <Field label="Réservation — sous-titre" testid="content-booking-subtitle" textarea rows={2} value={form.booking_subtitle} onChange={(v) => set("booking_subtitle", v)} />
         </Card>
 
@@ -262,6 +263,24 @@ export default function ContentPage() {
             onChange={(v) => set("astro_points", v.split("\n").map((s) => s.trim()).filter(Boolean))}
           />
           <Field label="Note de bas de section" testid="content-astro-note" textarea rows={2} value={form.astro_note} onChange={(v) => set("astro_note", v)} />
+        </Card>
+
+        <Card title="Bandeau Astro-sophro (page d'accueil)" testid="content-section-astro-band">
+          <Field label="Surtitre" testid="content-astro-band-surtitre" value={form.astro_band_surtitre} onChange={(v) => set("astro_band_surtitre", v)} hint="Texte en haut du bandeau vert avec étoiles" />
+          <Field label="Titre principal" testid="content-astro-band-title" value={form.astro_band_title} onChange={(v) => set("astro_band_title", v)} />
+          <Field label="Texte descriptif" testid="content-astro-band-text" textarea rows={3} value={form.astro_band_text} onChange={(v) => set("astro_band_text", v)} />
+          <Field label="Texte du bouton" testid="content-astro-band-button" value={form.astro_band_button} onChange={(v) => set("astro_band_button", v)} />
+        </Card>
+
+        <Card title="Réseaux sociaux" testid="content-section-social">
+          <p className="text-sm text-ink-muted mb-4">Les icônes s'affichent automatiquement dans le pied de page si vous renseignez les URLs complètes (https://...)</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Facebook" testid="content-social-facebook" value={form.social_facebook} onChange={(v) => set("social_facebook", v)} hint="URL complète de votre page Facebook" />
+            <Field label="Instagram" testid="content-social-instagram" value={form.social_instagram} onChange={(v) => set("social_instagram", v)} hint="URL complète de votre profil Instagram" />
+            <Field label="LinkedIn" testid="content-social-linkedin" value={form.social_linkedin} onChange={(v) => set("social_linkedin", v)} hint="URL complète de votre profil LinkedIn" />
+            <Field label="Resalib" testid="content-social-resalib" value={form.social_resalib} onChange={(v) => set("social_resalib", v)} hint="URL complète de votre profil Resalib" />
+            <Field label="Google (Fiche)" testid="content-social-google" value={form.social_google} onChange={(v) => set("social_google", v)} hint="URL complète de votre fiche Google" />
+          </div>
         </Card>
 
         <Card title="Contact & pied de page" testid="content-section-contact">

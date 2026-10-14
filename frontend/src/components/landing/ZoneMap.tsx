@@ -24,7 +24,7 @@ export function ZoneMap() {
     <div className="h-96 w-full overflow-hidden rounded-2xl border-2 border-sage-soft shadow-lg">
       <MapContainer
         center={ARGUENOS_CENTER}
-        zoom={11}
+        zoom={12}
         scrollWheelZoom={false}
         className="h-full w-full"
         style={{ zIndex: 0 }}

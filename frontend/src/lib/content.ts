@@ -28,6 +28,7 @@ export interface SiteContent {
   about_image: string | null;
   services_title: string;
   services_subtitle: string;
+  services_mutuelle_note: string;
   timeline_title: string;
   timeline_steps: TimelineStep[];
   timeline_note: string;
@@ -52,9 +53,18 @@ export interface SiteContent {
   astro_intro: string;
   astro_points: string[];
   astro_note: string;
+  astro_band_surtitre: string;
+  astro_band_title: string;
+  astro_band_text: string;
+  astro_band_button: string;
   about_secondary_title: string;
   about_secondary_text: string;
   about_secondary_image: string | null;
+  social_facebook: string;
+  social_instagram: string;
+  social_linkedin: string;
+  social_resalib: string;
+  social_google: string;
 }
 
 export const DEFAULT_CONTENT: SiteContent = {
@@ -82,6 +92,8 @@ export const DEFAULT_CONTENT: SiteContent = {
   services_title: "Des formules simples, le déplacement inclus",
   services_subtitle:
     "Toutes les séances ont lieu à votre domicile, sans frais de déplacement dans un rayon de 20 km autour d'Arguenos.",
+  services_mutuelle_note:
+    "Certaines mutuelles prennent en charge tout ou partie des séances de sophrologie, renseignez-vous auprès de la vôtre.",
   timeline_title: "Une heure suspendue, quatre temps doux",
   timeline_steps: [
     { title: "L'accueil & l'échange", duration: "15 min", text: "Un temps de parole pour poser votre besoin du jour, installer le cadre et la confiance." },
@@ -120,10 +132,20 @@ export const DEFAULT_CONTENT: SiteContent = {
   ],
   astro_note:
     "Katia est en cours de formation : les ateliers d'astro-sophrologie ouvriront prochainement. Contactez-la pour être informée du lancement.",
+  astro_band_surtitre: "Bientôt à l'atelier",
+  astro_band_title: "L'astro-sophrologie lève doucement son regard vers les étoiles",
+  astro_band_text:
+    "Katia se forme actuellement à l'astrologie pour relier ciel et intériorité. Des ateliers d'astro-sophro verront le jour prochainement : les étoiles veillent sur l'hippocampe.",
+  astro_band_button: "Découvrir l'astro-sophrologie",
   about_secondary_title: "Un atelier itinérant, pensé pour vous",
   about_secondary_text:
     "Katia aménage son camping-car en véritable atelier de sophrologie mobile : un cocon calme et chaleureux qui se gare près de chez vous, pour vos séances individuelles comme pour les petits ateliers collectifs. L'atelier vient à vous, même là où il n'y a pas de cabinet.",
   about_secondary_image: null,
+  social_facebook: "",
+  social_instagram: "",
+  social_linkedin: "",
+  social_resalib: "",
+  social_google: "",
 };
 
 export interface TestimonialDto {
