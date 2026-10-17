@@ -399,6 +399,10 @@ class ServiceOut(ServiceIn):
     display_order: int = 0
 
 
+class ReorderServicesBody(BaseModel):
+    service_ids: List[str]
+
+
 class AppointmentIn(BaseModel):
     service_id: str
     service_name: str
@@ -619,9 +623,9 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
 
 
 @api_router.put("/services/reorder")
-async def reorder_services(service_ids: List[str] = Body(..., embed=False), user: dict = Depends(get_current_user)):
+async def reorder_services(body: ReorderServicesBody, user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
-    for index, service_id in enumerate(service_ids):
+    for index, service_id in enumerate(body.service_ids):
         await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
     return {"ok": True}
 

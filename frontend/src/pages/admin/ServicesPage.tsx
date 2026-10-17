@@ -150,7 +150,7 @@ export default function ServicesPage() {
   );
 
   const reorderMutation = useMutation({
-    mutationFn: (serviceIds: string[]) => apiPut("/services/reorder", serviceIds),
+    mutationFn: (serviceIds: string[]) => apiPut("/services/reorder", { service_ids: serviceIds }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-services"] });
       queryClient.invalidateQueries({ queryKey: ["public-services"] });
