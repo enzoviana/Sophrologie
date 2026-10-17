@@ -15,8 +15,10 @@ load_dotenv(ROOT_DIR / ".env")
 import bcrypt
 import jwt
 import requests
+import cloudinary
+import cloudinary.uploader
 from fastapi import APIRouter, Body, Depends, FastAPI, File, Form, HTTPException, Request, Response, UploadFile
-from fastapi.responses import Response as RawResponse
+from fastapi.responses import Response as RawResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.cors import CORSMiddleware
 
@@ -29,7 +31,26 @@ ACCESS_MINUTES = 60 * 12
 REFRESH_DAYS = 7
 
 APP_NAME = "mon-atelier-sophto"
-USE_LOCAL_STORAGE = os.environ.get("USE_LOCAL_STORAGE", "true").lower() == "true"
+
+# Configuration du stockage
+USE_CLOUDINARY = os.environ.get("USE_CLOUDINARY", "false").lower() == "true"
+USE_LOCAL_STORAGE = os.environ.get("USE_LOCAL_STORAGE", "true").lower() == "true" and not USE_CLOUDINARY
+
+# Configuration Cloudinary
+if USE_CLOUDINARY:
+    cloudinary_url = os.environ.get("CLOUDINARY_URL")
+    if cloudinary_url:
+        cloudinary.config(cloudinary_url=cloudinary_url)
+        logger.info("Using Cloudinary storage")
+    else:
+        # Alternative config avec cloud_name, api_key, api_secret
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+            secure=True
+        )
+        logger.info(f"Using Cloudinary storage: {os.environ.get('CLOUDINARY_CLOUD_NAME')}")
 
 # Persistent Disk : utilise PERSISTENT_DISK_PATH si défini (Render), sinon ./uploads (local dev)
 PERSISTENT_DISK_PATH = os.environ.get("PERSISTENT_DISK_PATH")
@@ -42,7 +63,7 @@ STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https
 STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
 storage_key: Optional[str] = None
 
-# Créer le dossier uploads si nécessaire
+# Créer le dossier uploads si nécessaire (uniquement pour local storage)
 if USE_LOCAL_STORAGE:
     LOCAL_UPLOADS_DIR.mkdir(exist_ok=True, parents=True)
     logger.info(f"Using local storage at: {LOCAL_UPLOADS_DIR}")
@@ -59,12 +80,31 @@ def init_storage(force: bool = False) -> str:
 
 
 def put_object(path: str, data: bytes, content_type: str) -> dict:
-    if USE_LOCAL_STORAGE:
+    if USE_CLOUDINARY:
+        # Stockage Cloudinary
+        import io
+        # Utiliser le path comme public_id (sans extension)
+        public_id = path.rsplit(".", 1)[0]  # Enlève l'extension
+        public_id = public_id.replace("/", "_")  # Cloudinary n'aime pas les /
+
+        # Upload vers Cloudinary
+        result = cloudinary.uploader.upload(
+            io.BytesIO(data),
+            public_id=public_id,
+            folder=APP_NAME,
+            resource_type="image",
+            overwrite=True
+        )
+        # Retourner l'URL Cloudinary au lieu du path local
+        return {"path": result["secure_url"], "cloudinary_public_id": result["public_id"]}
+
+    elif USE_LOCAL_STORAGE:
         # Stockage local
         file_path = LOCAL_UPLOADS_DIR / path
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_bytes(data)
         return {"path": path}
+
     else:
         # Stockage Emergent (legacy)
         resp = requests.put(
@@ -78,7 +118,18 @@ def put_object(path: str, data: bytes, content_type: str) -> dict:
 
 
 def get_object(path: str) -> tuple[bytes, str]:
-    if USE_LOCAL_STORAGE:
+    if USE_CLOUDINARY:
+        # Pour Cloudinary, le path est déjà l'URL complète
+        # On fetch l'image depuis Cloudinary
+        if path.startswith("http"):
+            resp = requests.get(path, timeout=60)
+            resp.raise_for_status()
+            content_type = resp.headers.get("Content-Type", "image/jpeg")
+            return resp.content, content_type
+        else:
+            raise FileNotFoundError(f"Invalid Cloudinary URL: {path}")
+
+    elif USE_LOCAL_STORAGE:
         # Stockage local
         file_path = LOCAL_UPLOADS_DIR / path
         if not file_path.exists():
@@ -89,6 +140,7 @@ def get_object(path: str) -> tuple[bytes, str]:
         content_types = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp"}
         content_type = content_types.get(ext, "application/octet-stream")
         return data, content_type
+
     else:
         # Stockage Emergent (legacy)
         resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": init_storage()}, timeout=60)
@@ -790,6 +842,11 @@ async def upload_profile_photo(file: UploadFile = File(...), user: dict = Depend
 
 @api_router.get("/files/{path:path}")
 async def serve_file(path: str):
+    # Si Cloudinary et path est une URL, rediriger directement (plus performant)
+    if USE_CLOUDINARY and path.startswith("http"):
+        return RedirectResponse(url=path, status_code=302)
+
+    # Sinon, servir le fichier normalement (local storage ou fetch depuis Cloudinary)
     try:
         data, content_type = get_object(path)
     except FileNotFoundError:
