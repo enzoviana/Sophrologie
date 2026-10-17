@@ -165,7 +165,7 @@ DEFAULT_PROFILE = {
     "title": "Sophrologue passionnée",
     "bio": "Sophrologue itinérante dans le Comminges, je vous accompagne chez vous vers plus de calme et d'équilibre.",
     "phone": "06 72 11 11 53",
-    "email": "contact@monateliersophro.fr",
+    "email": "katchinka@yahoo.fr",
     "zone": "20 km autour d'Arguenos (31160)",
     "photo_path": None,
 }
@@ -209,7 +209,7 @@ DEFAULT_CONTENT = {
     "faq_title": "Tout ce que vous vous demandez",
     "contact_title": "Une question, une envie ? Écrivez-lui",
     "contact_phone": "06 72 11 11 53",
-    "contact_email": "contact@monateliersophro.fr",
+    "contact_email": "katchinka@yahoo.fr",
     "contact_note": "Katia vous répond sous 24 h, du lundi au samedi. Premier échange téléphonique gratuit et sans engagement, pour faire connaissance et poser votre besoin.",
     "footer_line1": "Respirez.",
     "footer_line2": "Ancrez-vous.",

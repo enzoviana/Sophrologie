@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://sophrologie-landing-1.preview.emergentagent.com/sitemap.xml
+Sitemap: https://https://sophrologie-five.vercel.app/sitemap.xml

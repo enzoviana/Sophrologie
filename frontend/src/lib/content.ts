@@ -115,7 +115,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   faq_title: "Tout ce que vous vous demandez",
   contact_title: "Une question, une envie ? Écrivez-lui",
   contact_phone: "06 72 11 11 53",
-  contact_email: "contact@monateliersophro.fr",
+  contact_email: "katchinka@yahoo.fr",
   contact_note:
     "Katia vous répond sous 24 h, du lundi au samedi. Premier échange téléphonique gratuit et sans engagement, pour faire connaissance et poser votre besoin.",
   footer_line1: "Respirez.",

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 export const SITE_NAME = "Mon Atelier Sophro";
-export const SITE_URL = "https://sophrologie-landing-1.preview.emergentagent.com";
+export const SITE_URL = "https://https://sophrologie-five.vercel.app";
 
 export const LOCAL_KEYWORDS =
   "sophrologue à domicile, sophrologie Comminges, sophrologue Arguenos 31160, sophrologue Aspet, sophrologue Saint-Gaudens, sophrologue Salies-du-Salat, sophrologue Haute-Garonne, sophrologie Occitanie, gestion du stress, troubles du sommeil, sophrologie enfant, relaxation à domicile";
