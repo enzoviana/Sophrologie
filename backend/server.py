@@ -29,9 +29,23 @@ ACCESS_MINUTES = 60 * 12
 REFRESH_DAYS = 7
 
 APP_NAME = "mon-atelier-sophto"
+USE_LOCAL_STORAGE = os.environ.get("USE_LOCAL_STORAGE", "true").lower() == "true"
+
+# Persistent Disk : utilise PERSISTENT_DISK_PATH si défini (Render), sinon ./uploads (local dev)
+PERSISTENT_DISK_PATH = os.environ.get("PERSISTENT_DISK_PATH")
+if PERSISTENT_DISK_PATH:
+    LOCAL_UPLOADS_DIR = Path(PERSISTENT_DISK_PATH)
+else:
+    LOCAL_UPLOADS_DIR = ROOT_DIR / "uploads"
+
 STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
 STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
 storage_key: Optional[str] = None
+
+# Créer le dossier uploads si nécessaire
+if USE_LOCAL_STORAGE:
+    LOCAL_UPLOADS_DIR.mkdir(exist_ok=True, parents=True)
+    logger.info(f"Using local storage at: {LOCAL_UPLOADS_DIR}")
 
 
 def init_storage(force: bool = False) -> str:
@@ -45,20 +59,41 @@ def init_storage(force: bool = False) -> str:
 
 
 def put_object(path: str, data: bytes, content_type: str) -> dict:
-    resp = requests.put(
-        f"{STORAGE_URL}/objects/{path}",
-        headers={"X-Storage-Key": init_storage(), "Content-Type": content_type},
-        data=data,
-        timeout=120,
-    )
-    resp.raise_for_status()
-    return resp.json()
+    if USE_LOCAL_STORAGE:
+        # Stockage local
+        file_path = LOCAL_UPLOADS_DIR / path
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_bytes(data)
+        return {"path": path}
+    else:
+        # Stockage Emergent (legacy)
+        resp = requests.put(
+            f"{STORAGE_URL}/objects/{path}",
+            headers={"X-Storage-Key": init_storage(), "Content-Type": content_type},
+            data=data,
+            timeout=120,
+        )
+        resp.raise_for_status()
+        return resp.json()
 
 
 def get_object(path: str) -> tuple[bytes, str]:
-    resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": init_storage()}, timeout=60)
-    resp.raise_for_status()
-    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+    if USE_LOCAL_STORAGE:
+        # Stockage local
+        file_path = LOCAL_UPLOADS_DIR / path
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {path}")
+        data = file_path.read_bytes()
+        # Déterminer le content-type basé sur l'extension
+        ext = path.rsplit(".", 1)[-1].lower()
+        content_types = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png", "webp": "image/webp"}
+        content_type = content_types.get(ext, "application/octet-stream")
+        return data, content_type
+    else:
+        # Stockage Emergent (legacy)
+        resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": init_storage()}, timeout=60)
+        resp.raise_for_status()
+        return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
 
 # ---------------- Auth ----------------
@@ -757,9 +792,14 @@ async def upload_profile_photo(file: UploadFile = File(...), user: dict = Depend
 async def serve_file(path: str):
     try:
         data, content_type = get_object(path)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Fichier non trouvé")
     except requests.HTTPError as exc:
         status = exc.response.status_code if exc.response is not None else 500
         raise HTTPException(status_code=status, detail="Fichier indisponible")
+    except Exception as exc:
+        logger.error(f"Error serving file {path}: {exc}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération du fichier")
     return RawResponse(content=data, media_type=content_type)
 
 
