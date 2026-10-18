@@ -587,6 +587,82 @@ async def auth_me(user: dict = Depends(get_current_user)):
     return user
 
 
+# ---------------- Admin utilities ----------------
+
+@api_router.post("/admin/migrate")
+async def migrate_database(user: dict = Depends(get_current_user)):
+    """Force database migration/cleanup - fixes schema issues"""
+    report = {
+        "services_fixed": 0,
+        "appointments_fixed": 0,
+        "testimonials_fixed": 0,
+        "faqs_fixed": 0,
+        "errors": []
+    }
+
+    try:
+        # Fix services: ensure display_order exists
+        services = await db.services.find({}).to_list(200)
+        for idx, service in enumerate(services):
+            if "display_order" not in service:
+                await db.services.update_one(
+                    {"id": service["id"]},
+                    {"$set": {"display_order": idx}}
+                )
+                report["services_fixed"] += 1
+
+        # Fix appointments: ensure all required fields exist
+        appointments = await db.appointments.find({}).to_list(1000)
+        for appointment in appointments:
+            updates = {}
+            if "status" not in appointment:
+                updates["status"] = "pending"
+            if "created_at" not in appointment:
+                updates["created_at"] = datetime.now(timezone.utc).isoformat()
+            if updates:
+                await db.appointments.update_one(
+                    {"id": appointment["id"]},
+                    {"$set": updates}
+                )
+                report["appointments_fixed"] += 1
+
+        # Fix testimonials: ensure created_at exists
+        testimonials = await db.testimonials.find({}).to_list(200)
+        for testimonial in testimonials:
+            if "created_at" not in testimonial:
+                await db.testimonials.update_one(
+                    {"id": testimonial["id"]},
+                    {"$set": {"created_at": datetime.now(timezone.utc).isoformat()}}
+                )
+                report["testimonials_fixed"] += 1
+
+        # Fix FAQs: ensure created_at exists
+        faqs = await db.faqs.find({}).to_list(200)
+        for faq in faqs:
+            if "created_at" not in faq:
+                await db.faqs.update_one(
+                    {"id": faq["id"]},
+                    {"$set": {"created_at": datetime.now(timezone.utc).isoformat()}}
+                )
+                report["faqs_fixed"] += 1
+
+        logger.info(f"Migration complete: {report}")
+        return {
+            "ok": True,
+            "message": "Migration terminée avec succès",
+            "report": report
+        }
+
+    except Exception as e:
+        logger.error(f"Migration error: {e}")
+        report["errors"].append(str(e))
+        return {
+            "ok": False,
+            "message": f"Erreur lors de la migration: {str(e)}",
+            "report": report
+        }
+
+
 # ---------------- Services ----------------
 
 @api_router.get("/services", response_model=List[ServiceOut])
