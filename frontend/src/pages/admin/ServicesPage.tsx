@@ -150,13 +150,20 @@ export default function ServicesPage() {
   );
 
   const reorderMutation = useMutation({
-    mutationFn: (serviceIds: string[]) => apiPut("/services/reorder", { service_ids: serviceIds }),
+    mutationFn: (serviceIds: string[]) => {
+      console.log("Reorder mutation called with:", serviceIds);
+      console.log("Sending to API:", { service_ids: serviceIds });
+      return apiPut("/services/reorder", { service_ids: serviceIds });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-services"] });
       queryClient.invalidateQueries({ queryKey: ["public-services"] });
       toast.success("Ordre enregistré");
     },
-    onError: (err) => toast.error(formatApiError(err)),
+    onError: (err) => {
+      console.error("Reorder error:", err);
+      toast.error(formatApiError(err));
+    },
   });
 
   const saveMutation = useMutation({

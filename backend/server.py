@@ -625,6 +625,7 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
 @api_router.put("/services/reorder")
 async def reorder_services(body: ReorderServicesBody, user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
+    logger.info(f"Reorder services called with {len(body.service_ids)} services")
     for index, service_id in enumerate(body.service_ids):
         await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
     return {"ok": True}
