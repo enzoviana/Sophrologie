@@ -700,51 +700,53 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
 
 
 @api_router.put("/services/reorder")
-async def reorder_services(request: Request, user: dict = Depends(get_current_user)):
+async def reorder_services(body: dict = Body(...), user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
-    # Log 1: Raw body reçu
-    raw_body = await request.body()
-    logger.info(f"🔍 RAW BODY reçu: {raw_body.decode('utf-8')}")
+    # Log AVANT tout
+    logger.info("=" * 60)
+    logger.info("🔍 ENDPOINT /services/reorder appelé")
+    logger.info(f"🔍 Body reçu: {body}")
+    logger.info(f"🔍 Type du body: {type(body)}")
+    logger.info(f"🔍 Clés du body: {list(body.keys()) if isinstance(body, dict) else 'pas un dict'}")
+    logger.info("=" * 60)
 
-    # Log 2: Parse le JSON
     try:
-        import json
-        body_json = json.loads(raw_body)
-        logger.info(f"🔍 BODY JSON parsé: {body_json}")
-        logger.info(f"🔍 Type du body: {type(body_json)}")
-
-        # Log 3: Vérifier si c'est un dict ou un array
-        if isinstance(body_json, dict):
-            logger.info(f"🔍 C'est un DICT avec les clés: {list(body_json.keys())}")
-            if "service_ids" in body_json:
-                service_ids = body_json["service_ids"]
+        # Vérifier si c'est un dict avec service_ids
+        if isinstance(body, dict):
+            if "service_ids" in body:
+                service_ids = body["service_ids"]
                 logger.info(f"✅ service_ids trouvé: {service_ids}")
             else:
-                logger.error(f"❌ Clé 'service_ids' manquante. Clés disponibles: {list(body_json.keys())}")
-                raise HTTPException(status_code=422, detail=f"Clé 'service_ids' manquante. Reçu: {list(body_json.keys())}")
-        elif isinstance(body_json, list):
-            logger.info(f"🔍 C'est un ARRAY direct: {body_json}")
-            service_ids = body_json
+                logger.error(f"❌ Clé 'service_ids' manquante. Clés disponibles: {list(body.keys())}")
+                raise HTTPException(status_code=422, detail=f"Clé 'service_ids' manquante. Reçu: {list(body.keys())}")
+        elif isinstance(body, list):
+            logger.info(f"🔍 Body est un ARRAY direct: {body}")
+            service_ids = body
         else:
-            logger.error(f"❌ Format inattendu: {type(body_json)}")
-            raise HTTPException(status_code=422, detail=f"Format inattendu: {type(body_json)}")
+            logger.error(f"❌ Format inattendu: {type(body)}")
+            raise HTTPException(status_code=422, detail=f"Format inattendu: {type(body)}")
 
-        # Log 4: Validation
+        # Validation
+        if not isinstance(service_ids, list):
+            logger.error(f"❌ service_ids n'est pas une liste: {type(service_ids)}")
+            raise HTTPException(status_code=422, detail="service_ids doit être une liste")
+
         logger.info(f"🔍 Nombre de services à réorganiser: {len(service_ids)}")
 
-        # Log 5: Mise à jour
+        # Mise à jour
         for index, service_id in enumerate(service_ids):
             logger.info(f"🔍 Mise à jour service {service_id} avec display_order={index}")
-            await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
+            result = await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
+            if result.matched_count == 0:
+                logger.warning(f"⚠️ Service {service_id} non trouvé dans la BDD")
 
         logger.info(f"✅ Réorganisation terminée avec succès pour {len(service_ids)} services")
-        return {"ok": True}
+        return {"ok": True, "updated": len(service_ids)}
 
-    except json.JSONDecodeError as e:
-        logger.error(f"❌ Erreur de parsing JSON: {e}")
-        raise HTTPException(status_code=422, detail=f"JSON invalide: {str(e)}")
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"❌ Erreur inattendue: {e}")
+        logger.error(f"❌ Erreur inattendue: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
 
 
