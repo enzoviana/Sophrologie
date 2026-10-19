@@ -21,7 +21,8 @@ from fastapi import APIRouter, Body, Depends, FastAPI, File, Form, HTTPException
 from fastapi.responses import Response as RawResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.cors import CORSMiddleware
-
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from lib.db import client, db, ensure_indexes
 
@@ -376,7 +377,14 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 api_router = APIRouter(prefix="/api")
 
-
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(f"❌ Erreur de validation 422 sur {request.url}: {exc.errors()}")
+    logger.error(f"🔍 Corps reçu posant problème: {await request.body()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": exc.body},
+    )
 # ---------------- Models ----------------
 
 class LoginBody(BaseModel):
