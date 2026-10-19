@@ -41,10 +41,9 @@ async function request<T>(method: string, path: string, body?: JsonBody): Promis
 // The response type is yours to declare: nothing infers across the Python boundary, so a
 // TS interface here mirrors the endpoint's Pydantic model by hand — keep the two in sync.
 export const apiGet = <T>(path: string) => request<T>("GET", path);
-export const apiPost = <T>(path: string, body?: JsonBody) => request<T>("POST", path, body ?? null);
-export const apiPut = <T>(path: string, body?: JsonBody) => request<T>("PUT", path, body ?? null);
-export const apiPatch = <T>(path: string, body?: JsonBody) =>
-  request<T>("PATCH", path, body ?? null);
+export const apiPost = <T>(path: string, body?: JsonBody) => request<T>("POST", path, body);
+export const apiPut = <T>(path: string, body?: JsonBody) => request<T>("PUT", path, body);
+export const apiPatch = <T>(path: string, body?: JsonBody) => request<T>("PATCH", path, body);
 export const apiDelete = <T>(path: string) => request<T>("DELETE", path);
 
 // Helper to get the full API URL for use in fetch calls outside of the request function
