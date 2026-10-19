@@ -690,23 +690,6 @@ async def create_service(body: ServiceIn, user: dict = Depends(get_current_user)
     await db.services.insert_one(doc)
     return ServiceOut(**body.model_dump(), id=doc["id"], display_order=next_order)
 
-
-@api_router.put("/services/{service_id}", response_model=ServiceOut)
-async def update_service(service_id: str, body: ServiceIn, user: dict = Depends(get_current_user)):
-    result = await db.services.update_one({"id": service_id}, {"$set": body.model_dump()})
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Service introuvable")
-    return ServiceOut(**body.model_dump(), id=service_id)
-
-
-@api_router.delete("/services/{service_id}")
-async def delete_service(service_id: str, user: dict = Depends(get_current_user)):
-    result = await db.services.delete_one({"id": service_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Service introuvable")
-    return {"ok": True}
-
-
 @api_router.put("/services/reorder")
 async def reorder_services(body: ReorderServicesBody, user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
@@ -734,6 +717,24 @@ async def reorder_services(body: ReorderServicesBody, user: dict = Depends(get_c
     except Exception as e:
         logger.error(f"❌ Erreur inattendue: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
+
+
+@api_router.put("/services/{service_id}", response_model=ServiceOut)
+async def update_service(service_id: str, body: ServiceIn, user: dict = Depends(get_current_user)):
+    result = await db.services.update_one({"id": service_id}, {"$set": body.model_dump()})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service introuvable")
+    return ServiceOut(**body.model_dump(), id=service_id)
+
+
+@api_router.delete("/services/{service_id}")
+async def delete_service(service_id: str, user: dict = Depends(get_current_user)):
+    result = await db.services.delete_one({"id": service_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Service introuvable")
+    return {"ok": True}
+
+
 
 
 # ---------------- Availability & appointments ----------------
