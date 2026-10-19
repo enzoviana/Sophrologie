@@ -20,6 +20,18 @@ export class ApiError extends Error {
 type JsonBody = unknown;
 
 async function request<T>(method: string, path: string, body?: JsonBody): Promise<T> {
+  // 🔍 LOG: Avant l'envoi
+  if (path.includes("reorder")) {
+    console.log("🔍 [API] URL:", `${BASE}${path}`);
+    console.log("🔍 [API] Method:", method);
+    console.log("🔍 [API] Body avant stringify:", body);
+    console.log("🔍 [API] Type du body:", typeof body);
+    if (body && typeof body === "object") {
+      console.log("🔍 [API] Clés du body:", Object.keys(body));
+      console.log("🔍 [API] Body stringifié:", JSON.stringify(body));
+    }
+  }
+
   // Auth rides the httpOnly session cookie automatically — never add auth headers here.
   const res = await fetch(`${BASE}${path}`, {
     method,
@@ -28,9 +40,23 @@ async function request<T>(method: string, path: string, body?: JsonBody): Promis
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 
+  // 🔍 LOG: Réponse
+  if (path.includes("reorder")) {
+    console.log("🔍 [API] Status de réponse:", res.status);
+    console.log("🔍 [API] Headers de réponse:", [...res.headers.entries()]);
+  }
+
   // FastAPI reports request-validation failures as 422 with a {detail: [...]} body.
   if (!res.ok) {
     const errBody = await res.json().catch(() => null);
+
+    // 🔍 LOG: Erreur détaillée
+    if (path.includes("reorder")) {
+      console.error("❌ [API] Erreur:", res.status);
+      console.error("❌ [API] Body d'erreur:", errBody);
+      console.error("❌ [API] Detail:", errBody?.detail);
+    }
+
     throw new ApiError(res.status, errBody);
   }
 

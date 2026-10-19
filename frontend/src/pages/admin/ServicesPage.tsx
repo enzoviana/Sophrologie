@@ -151,17 +151,40 @@ export default function ServicesPage() {
 
   const reorderMutation = useMutation({
     mutationFn: (serviceIds: string[]) => {
-      console.log("Reorder mutation called with:", serviceIds);
-      console.log("Sending to API:", { service_ids: serviceIds });
-      return apiPut("/services/reorder", { service_ids: serviceIds });
+      console.log("═══════════════════════════════════════");
+      console.log("🔍 [ServicesPage] Reorder mutation déclenchée");
+      console.log("🔍 [ServicesPage] Type de serviceIds:", typeof serviceIds);
+      console.log("🔍 [ServicesPage] Array.isArray(serviceIds):", Array.isArray(serviceIds));
+      console.log("🔍 [ServicesPage] serviceIds:", serviceIds);
+      console.log("🔍 [ServicesPage] Nombre d'IDs:", serviceIds.length);
+
+      const payload = { service_ids: serviceIds };
+      console.log("🔍 [ServicesPage] Payload créé:", payload);
+      console.log("🔍 [ServicesPage] Type du payload:", typeof payload);
+      console.log("🔍 [ServicesPage] Clés du payload:", Object.keys(payload));
+      console.log("🔍 [ServicesPage] JSON.stringify(payload):", JSON.stringify(payload));
+      console.log("═══════════════════════════════════════");
+
+      return apiPut("/services/reorder", payload);
     },
     onSuccess: () => {
+      console.log("✅ [ServicesPage] Reorder réussi !");
       queryClient.invalidateQueries({ queryKey: ["admin-services"] });
       queryClient.invalidateQueries({ queryKey: ["public-services"] });
       toast.success("Ordre enregistré");
     },
-    onError: (err) => {
-      console.error("Reorder error:", err);
+    onError: (err: any) => {
+      console.error("═══════════════════════════════════════");
+      console.error("❌ [ServicesPage] Erreur reorder:");
+      console.error("❌ [ServicesPage] Type d'erreur:", typeof err);
+      console.error("❌ [ServicesPage] Erreur complète:", err);
+      console.error("❌ [ServicesPage] err.status:", err.status);
+      console.error("❌ [ServicesPage] err.body:", err.body);
+      console.error("❌ [ServicesPage] err.message:", err.message);
+      if (err.body && err.body.detail) {
+        console.error("❌ [ServicesPage] Detail de l'erreur:", err.body.detail);
+      }
+      console.error("═══════════════════════════════════════");
       toast.error(formatApiError(err));
     },
   });

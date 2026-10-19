@@ -700,12 +700,52 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
 
 
 @api_router.put("/services/reorder")
-async def reorder_services(service_ids: List[str], user: dict = Depends(get_current_user)):
+async def reorder_services(request: Request, user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
-    logger.info(f"Reorder services called with {len(service_ids)} services")
-    for index, service_id in enumerate(service_ids):
-        await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
-    return {"ok": True}
+    # Log 1: Raw body reçu
+    raw_body = await request.body()
+    logger.info(f"🔍 RAW BODY reçu: {raw_body.decode('utf-8')}")
+
+    # Log 2: Parse le JSON
+    try:
+        import json
+        body_json = json.loads(raw_body)
+        logger.info(f"🔍 BODY JSON parsé: {body_json}")
+        logger.info(f"🔍 Type du body: {type(body_json)}")
+
+        # Log 3: Vérifier si c'est un dict ou un array
+        if isinstance(body_json, dict):
+            logger.info(f"🔍 C'est un DICT avec les clés: {list(body_json.keys())}")
+            if "service_ids" in body_json:
+                service_ids = body_json["service_ids"]
+                logger.info(f"✅ service_ids trouvé: {service_ids}")
+            else:
+                logger.error(f"❌ Clé 'service_ids' manquante. Clés disponibles: {list(body_json.keys())}")
+                raise HTTPException(status_code=422, detail=f"Clé 'service_ids' manquante. Reçu: {list(body_json.keys())}")
+        elif isinstance(body_json, list):
+            logger.info(f"🔍 C'est un ARRAY direct: {body_json}")
+            service_ids = body_json
+        else:
+            logger.error(f"❌ Format inattendu: {type(body_json)}")
+            raise HTTPException(status_code=422, detail=f"Format inattendu: {type(body_json)}")
+
+        # Log 4: Validation
+        logger.info(f"🔍 Nombre de services à réorganiser: {len(service_ids)}")
+
+        # Log 5: Mise à jour
+        for index, service_id in enumerate(service_ids):
+            logger.info(f"🔍 Mise à jour service {service_id} avec display_order={index}")
+            await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
+
+        logger.info(f"✅ Réorganisation terminée avec succès pour {len(service_ids)} services")
+        return {"ok": True}
+
+    except json.JSONDecodeError as e:
+        logger.error(f"❌ Erreur de parsing JSON: {e}")
+        raise HTTPException(status_code=422, detail=f"JSON invalide: {str(e)}")
+    except Exception as e:
+        logger.error(f"❌ Erreur inattendue: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
 
 
 # ---------------- Availability & appointments ----------------
