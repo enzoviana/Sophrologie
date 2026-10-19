@@ -702,6 +702,7 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
 @api_router.put("/services/reorder")
 async def reorder_services(body: ReorderServicesBody, user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
+    # FORCE RELOAD - Updated: 2026-10-19 11:30
     # Log AVANT tout
     logger.info("=" * 60)
     logger.info("🔍 ENDPOINT /services/reorder appelé")
