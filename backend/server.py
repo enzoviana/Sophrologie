@@ -700,51 +700,28 @@ async def delete_service(service_id: str, user: dict = Depends(get_current_user)
 
 
 @api_router.put("/services/reorder")
-async def reorder_services(body: dict = Body(...), user: dict = Depends(get_current_user)):
+async def reorder_services(body: ReorderServicesBody, user: dict = Depends(get_current_user)):
     """Reorder services by updating display_order for each service ID in the list"""
     # Log AVANT tout
     logger.info("=" * 60)
     logger.info("🔍 ENDPOINT /services/reorder appelé")
     logger.info(f"🔍 Body reçu: {body}")
-    logger.info(f"🔍 Type du body: {type(body)}")
-    logger.info(f"🔍 Clés du body: {list(body.keys()) if isinstance(body, dict) else 'pas un dict'}")
+    logger.info(f"🔍 service_ids: {body.service_ids}")
+    logger.info(f"🔍 Nombre de services: {len(body.service_ids)}")
     logger.info("=" * 60)
 
     try:
-        # Vérifier si c'est un dict avec service_ids
-        if isinstance(body, dict):
-            if "service_ids" in body:
-                service_ids = body["service_ids"]
-                logger.info(f"✅ service_ids trouvé: {service_ids}")
-            else:
-                logger.error(f"❌ Clé 'service_ids' manquante. Clés disponibles: {list(body.keys())}")
-                raise HTTPException(status_code=422, detail=f"Clé 'service_ids' manquante. Reçu: {list(body.keys())}")
-        elif isinstance(body, list):
-            logger.info(f"🔍 Body est un ARRAY direct: {body}")
-            service_ids = body
-        else:
-            logger.error(f"❌ Format inattendu: {type(body)}")
-            raise HTTPException(status_code=422, detail=f"Format inattendu: {type(body)}")
-
-        # Validation
-        if not isinstance(service_ids, list):
-            logger.error(f"❌ service_ids n'est pas une liste: {type(service_ids)}")
-            raise HTTPException(status_code=422, detail="service_ids doit être une liste")
-
-        logger.info(f"🔍 Nombre de services à réorganiser: {len(service_ids)}")
-
         # Mise à jour
-        for index, service_id in enumerate(service_ids):
+        for index, service_id in enumerate(body.service_ids):
             logger.info(f"🔍 Mise à jour service {service_id} avec display_order={index}")
             result = await db.services.update_one({"id": service_id}, {"$set": {"display_order": index}})
             if result.matched_count == 0:
                 logger.warning(f"⚠️ Service {service_id} non trouvé dans la BDD")
 
-        logger.info(f"✅ Réorganisation terminée avec succès pour {len(service_ids)} services")
-        return {"ok": True, "updated": len(service_ids)}
+        logger.info(f"✅ Réorganisation terminée avec succès pour {len(body.service_ids)} services")
+        logger.info("=" * 60)
+        return {"ok": True, "updated": len(body.service_ids)}
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.error(f"❌ Erreur inattendue: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Erreur: {str(e)}")
