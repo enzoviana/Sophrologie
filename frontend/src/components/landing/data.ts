@@ -51,6 +51,7 @@ export const NAV_LINKS = [
   { to: "/prestations", label: "Prestations", end: false },
   { to: "/a-propos", label: "À propos", end: false },
   { to: "/astro-sophrologie", label: "Astro-sophro", end: false },
+  { to: "/temoignages", label: "Témoignages", end: false },
   { to: "/contact", label: "Contact", end: false },
 ];
 

@@ -9,6 +9,7 @@ import AboutPage from "@/pages/AboutPage";
 import BookingPage from "@/pages/BookingPage";
 import ContactPage from "@/pages/ContactPage";
 import AstroSophroPage from "@/pages/AstroSophroPage";
+import TestimonialsPagePublic from "@/pages/TestimonialsPagePublic";
 import NotFoundPage from "@/pages/NotFoundPage";
 import MentionsLegalesPage from "@/pages/MentionsLegalesPage";
 import AdminLogin from "@/pages/admin/Login";
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/rendez-vous" element={<BookingPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/astro-sophrologie" element={<AstroSophroPage />} />
+          <Route path="/temoignages" element={<TestimonialsPagePublic />} />
           <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
